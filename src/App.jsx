@@ -21,6 +21,8 @@ function App() {
       <div>
         <h1>hello</h1>
         <MyButton/>
+        <MyButton/>
+        <MyButton/>
       </div>
     </>
   );
