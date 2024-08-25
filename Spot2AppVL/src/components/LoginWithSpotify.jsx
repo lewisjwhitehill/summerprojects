@@ -3,6 +3,7 @@ import React from 'react';
 function LoginWithSpotify() {
   const handleLogin = () => {
     // Redirect to your serverless function that starts the Spotify OAuth flow
+    console.log("About to switch where we are!");
     window.location.href = '../api/spotify';
    
   };
