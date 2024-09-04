@@ -25,7 +25,7 @@ export default async function handler(req, res) {
     if (data.access_token) {
       // Store the access token securely, e.g., in a session or database
       // Redirect the user to a dashboard or another page with the access token as a query parameter
-      res.redirect(`/dashboard?access_token=${data.access_token}`);
+      res.redirect(`/Dashboard?access_token=${data.access_token}`);
     } else {
       res.status(400).json({ error: 'Authorization failed' });
     }
