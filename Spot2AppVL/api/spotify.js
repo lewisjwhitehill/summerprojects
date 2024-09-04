@@ -14,6 +14,6 @@ export default function handler(req, res) {
     console.log('Authorization URL:', authUrl);
   
     // Perform the redirect
-    res.redirect(authUrl);  // Removed the extra closing parenthesis
+    res.redirect(authUrl);  
   }
   
