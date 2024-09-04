@@ -7,8 +7,8 @@ export default function handler(req, res) {
     console.log('Client ID:', clientId);
     console.log('Redirect URI:', redirectUri);
   
-    const authUrl = `https://accounts.spotify.com/authorize?response_type=code&client_id=${clientId}&scope=${encodeURIComponent(scopes)}&redirect_uri=${encodeURIComponent(redirectUri)}`;
-    //const authUrl = 'https://www.youtube.com';
+   //const authUrl = `https://accounts.spotify.com/authorize?response_type=code&client_id=${clientId}&scope=${encodeURIComponent(scopes)}&redirect_uri=${encodeURIComponent(redirectUri)}`;
+    const authUrl = 'https://www.youtube.com';
 
     // Log the authorization URL for verification
     console.log('Authorization URL:', authUrl);
