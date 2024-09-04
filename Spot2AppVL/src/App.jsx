@@ -4,18 +4,18 @@ import LoginWithSpotify from "./components/LoginWithSpotify.jsx";
 import Dashboard from "./components/Dashboard.jsx"; // Assume you have this component
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Track login state
+  const [accessToken, setAccessToken] = useState(null); // Store the access token
 
-  // This function will be called when the user logs in (you can adjust based on actual login logic)
-  const handleLogin = () => {
-    setIsLoggedIn(true); // Update state to show Dashboard
+  // This function will be triggered when the user logs in and we get the token
+  const handleLogin = (token) => {
+    setAccessToken(token); // Set the token and consider the user logged in
   };
 
   return (
     <>
       <div className="card">
-        {/* Conditionally render based on whether the user is logged in */}
-        {isLoggedIn ? (
+        {/* Conditionally render Dashboard if logged in, otherwise show login */}
+        {accessToken ? (
           <Dashboard />
         ) : (
           <LoginWithSpotify onLogin={handleLogin} />
