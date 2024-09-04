@@ -1,36 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
-import './App.css';
-import LoginWithSpotify from './components/LoginWithSpotify';
-import Dashboard from './components/Dashboard';
+import { useState } from 'react'
+import reactLogo from './assets/react.svg'
+import viteLogo from '/vite.svg'
+import './App.css'
+import LoginWithSpotify from './components/LoginWithSpotify.jsx';
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [accessToken, setAccessToken] = useState(null);
-  const location = useLocation();
-
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const token = params.get('access_token');
-    if (token) {
-      setAccessToken(token);
-      setIsLoggedIn(true);
-    }
-  }, [location]);
+  const [count, setCount] = useState(0)
 
   return (
-    <Router>
-      <div className="App">
-        <Routes>
-          <Route path="/" element={<LoginWithSpotify />} />
-          <Route
-            path="/dashboard"
-            element={isLoggedIn ? <Dashboard accessToken={accessToken} /> : <LoginWithSpotify />}
-          />
-        </Routes>
+    <>
+
+      <div className="card">
+        <LoginWithSpotify />
       </div>
-    </Router>
-  );
+    </>
+  )
 }
 
-export default App;
+export default App
