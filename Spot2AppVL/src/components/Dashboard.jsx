@@ -1,37 +1,45 @@
-// src/components/Dashboard.jsx
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 
-function Dashboard({ accessToken }) {
+function Dashboard() {
   const [userData, setUserData] = useState(null);
+  const location = useLocation();
+
+  // Function to extract the access token from the URL
+  const getAccessToken = () => {
+    const params = new URLSearchParams(location.search);
+    return params.get("access_token");
+  };
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await fetch('https://api.spotify.com/v1/me', {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-        const data = await response.json();
-        setUserData(data);
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      }
-    };
-
-    if (accessToken) {
-      fetchUserData();
+    const token = getAccessToken();
+    if (token) {
+      fetchUserData(token); // Fetch user data with the access token
     }
-  }, [accessToken]);
+  }, [location]);
+
+  // Function to fetch user information from Spotify API
+  const fetchUserData = async (token) => {
+    try {
+      const response = await fetch("https://api.spotify.com/v1/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      setUserData(data); // Store the data in state
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
 
   return (
     <div>
-      <h1>Spotify Dashboard</h1>
       {userData ? (
         <div>
-          <h2>Welcome, {userData.display_name}</h2>
+          <h1>Welcome, {userData.display_name}!</h1>
+          <img src={userData.images[0]?.url} alt="Profile" />
           <p>Email: {userData.email}</p>
-          <p>Country: {userData.country}</p>
         </div>
       ) : (
         <p>Loading user data...</p>
