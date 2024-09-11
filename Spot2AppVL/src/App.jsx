@@ -27,7 +27,7 @@ function App() {
       ) : (
         <LoginWithSpotify onLogin={setAccessToken} />
       )}
-    <h1>accessToken</h1>
+    <h1>{accessToken}</h1>
   </div>
   );
 }
