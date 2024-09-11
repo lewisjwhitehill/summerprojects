@@ -6,14 +6,16 @@ export default async function handler(req, res) {
   const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
   const redirectUri = process.env.SPOTIFY_REDIRECT_URI;
 
-  const response = await fetch('https://accounts.spotify.com/api/token', {
-    method: 'POST',
+  const response = await fetch("https://accounts.spotify.com/api/token", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      Authorization: 'Basic ' + Buffer.from(`${clientId}:${clientSecret}`).toString('base64'),
+      "Content-Type": "application/x-www-form-urlencoded",
+      Authorization:
+        "Basic " +
+        Buffer.from(`${clientId}:${clientSecret}`).toString("base64"),
     },
     body: new URLSearchParams({
-      grant_type: 'authorization_code',
+      grant_type: "authorization_code",
       code: code,
       redirect_uri: redirectUri,
     }),
@@ -24,9 +26,9 @@ export default async function handler(req, res) {
   if (data.access_token) {
     // Redirect to the dashboard with the access token
     //res.redirect(`/Dashboard`);
-    window.location.href = "/src/components/Dashboard";
-    //res.redirect(`/dashboard?access_token=${data.access_token}`);
+    //window.location.href = "/src/components/Dashboard";
+    res.redirect(`/dashboard?access_token=${data.access_token}`);
   } else {
-    res.status(400).json({ error: 'Authorization failed' });
+    res.status(400).json({ error: "Authorization failed" });
   }
 }
