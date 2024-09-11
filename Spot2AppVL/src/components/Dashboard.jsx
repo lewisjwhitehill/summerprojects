@@ -1,51 +1,38 @@
-import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import React, { useState } from "react";
 
-function Dashboard() {
-  const [userData, setUserData] = useState(null);
-  const location = useLocation();
+function LoginWithSpotify() {
+  const [isLoading, setIsLoading] = useState(false); // State to handle loading
 
-  // Function to extract the access token from the URL
-  const getAccessToken = () => {
-    const params = new URLSearchParams(location.search);
-    return params.get("access_token");
-  };
+  const handleLogin = () => {
+    setIsLoading(true); // Set loading to true when login starts
 
-  useEffect(() => {
-    const token = getAccessToken();
-    if (token) {
-      fetchUserData(token); // Fetch user data with the access token
-    }
-  }, [location]);
-
-  // Function to fetch user information from Spotify API
-  const fetchUserData = async (token) => {
-    try {
-      const response = await fetch("https://api.spotify.com/v1/me", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = await response.json();
-      setUserData(data); // Store the data in state
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-    }
+    // Redirect to your serverless function that starts the Spotify OAuth flow
+    console.log("Redirecting to Spotify OAuth flow...");
+    window.location.href = "/api/spotify"; // Make sure this is set up correctly
   };
 
   return (
-    <div>
-      {userData ? (
-        <div>
-          <h1>Welcome, {userData.display_name}!</h1>
-          <img src={userData.images[0]?.url} alt="Profile" />
-          <p>Email: {userData.email}</p>
-        </div>
-      ) : (
-        <p>Loading user data...</p>
-      )}
+    <div style={{ textAlign: "center", marginTop: "50px" }}>
+      <h1>Connect Your Spotify Account</h1>
+      <p>To use our app, please log in with your Spotify account.</p>
+      {/* Disable button while loading to prevent multiple clicks */}
+      <button
+        onClick={handleLogin}
+        disabled={isLoading}
+        style={{
+          padding: "10px 20px",
+          fontSize: "16px",
+          backgroundColor: isLoading ? "#ccc" : "#1DB954", // Change button color when loading
+          color: "#ffffff",
+          border: "none",
+          borderRadius: "25px",
+          cursor: "pointer",
+        }}
+      >
+        {isLoading ? "Redirecting..." : "Login with Spotify"}
+      </button>
     </div>
   );
 }
 
-export default Dashboard;
+export default LoginWithSpotify;
