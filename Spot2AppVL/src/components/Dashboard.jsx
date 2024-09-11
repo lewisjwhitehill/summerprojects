@@ -1,37 +1,54 @@
 import React, { useEffect, useState } from "react";
 
 function Dashboard({ accessToken }) {
-  const [userInfo, setUserInfo] = useState(null);
+  const [currentTrack, setCurrentTrack] = useState(null);
 
-  // Fetch Spotify user profile data
+  // Fetch the currently playing track
   useEffect(() => {
     if (!accessToken) return;
 
-    const fetchUserInfo = async () => {
-      const response = await fetch("https://api.spotify.com/v1/me", {
+    const fetchCurrentlyPlaying = async () => {
+      const response = await fetch("https://api.spotify.com/v1/me/player/currently-playing", {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       });
+
+      if (response.status === 204 || response.status > 400) {
+        // No song is currently playing
+        setCurrentTrack(null);
+        return;
+      }
+
       const data = await response.json();
-      setUserInfo(data);
+      setCurrentTrack(data);
     };
 
-    fetchUserInfo();
+    fetchCurrentlyPlaying();
   }, [accessToken]);
 
-  if (!userInfo) {
-    return <div>Loading...</div>; // Show loading message while data is being fetched
+  if (!currentTrack) {
+    return (
+      <div style={{ textAlign: "center", marginTop: "50px" }}>
+        <h1>No song is currently being played</h1>
+      </div>
+    );
   }
+
+  const { item: track } = currentTrack;
 
   return (
     <div style={{ textAlign: "center", marginTop: "50px" }}>
-      <h1>Welcome, {userInfo.display_name}</h1>
-      {userInfo.images.length > 0 && (
+      <h1>Now Playing</h1>
+      <h2>{track.name}</h2>
+      <p>
+        {track.artists.map(artist => artist.name).join(", ")}
+      </p>
+      {track.album.images.length > 0 && (
         <img
-          src={userInfo.images[0].url}
-          alt="Profile"
-          style={{ borderRadius: "50%", width: "150px", height: "150px" }}
+          src={track.album.images[0].url}
+          alt={track.name}
+          style={{ width: "200px", height: "200px", borderRadius: "10px" }}
         />
       )}
     </div>
