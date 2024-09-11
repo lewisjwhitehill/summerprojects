@@ -16,7 +16,7 @@ function App() {
       <div className="card">
         <Routes>
           {accessToken ? (
-            <Route path="/Dashboard" element={<Dashboard accessToken={accessToken} />} />
+            <Route path="/" element={<Dashboard />} />
           ) : (
             <Route path="/" element={<LoginWithSpotify onLogin={handleLogin} />} />
           )}
