@@ -14,6 +14,7 @@ function App() {
     if (token) {
       setAccessToken(token);
       // Optionally, you can remove the token from the URL once it's set
+
       window.history.replaceState({}, document.title, "/");
     }
   }, []);
@@ -21,11 +22,13 @@ function App() {
   return (
     <div className="card">
       {accessToken ? (
-        <Dashboard />
+        <Dashboard accessToken={accessToken} />
+        
       ) : (
         <LoginWithSpotify onLogin={setAccessToken} />
       )}
-    </div>
+    <h1>accessToken</h1>
+  </div>
   );
 }
 
