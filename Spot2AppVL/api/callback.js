@@ -27,7 +27,7 @@ export default async function handler(req, res) {
     // Redirect to the dashboard with the access token
     //res.redirect(`/Dashboard`);
     //window.location.href = "/src/components/Dashboard";
-    res.redirect(`/dashboard?access_token=${data.access_token}`);
+    res.redirect(`/src/components/Dashboard?access_token=${data.access_token}`);
   } else {
     res.status(400).json({ error: "Authorization failed" });
   }
