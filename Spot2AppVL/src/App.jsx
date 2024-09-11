@@ -23,18 +23,21 @@ function App() {
     }
   }, []);
 
+
   return (
-    <Router>
-      <div className="card">
-        <Routes>
-          {accessToken ? (
-            <Route path="/" element={<Dashboard />} />
-          ) : (
-            <Route path="/" element={<LoginWithSpotify onLogin={setAccessToken} />} />
-          )}
-        </Routes>
-      </div>
-    </Router>
+    <AuthContext.Provider value={accessToken}>
+      <Router>
+        <div className="card">
+          <Routes>
+            {accessToken ? (
+              <Route path="/" element={<Dashboard />} />
+            ) : (
+              <Route path="/" element={<LoginWithSpotify onLogin={setAccessToken} />} />
+            )}
+          </Routes>
+        </div>
+      </Router>
+    </AuthContext.Provider>
   );
 }
 
