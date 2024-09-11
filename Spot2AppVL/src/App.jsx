@@ -12,13 +12,11 @@ function App() {
   };
 
   return (
-    <Router> {/* Wrap the app with Router */}
+    <Router>
       <div className="card">
-        {/* Conditionally render Dashboard if logged in, otherwise show login */}
         <Routes>
-          {/* Define routes here */}
           {accessToken ? (
-            <Route path="/dashboard" element={<Dashboard accessToken={accessToken} />} />
+            <Route path="/Dashboard" element={<Dashboard accessToken={accessToken} />} />
           ) : (
             <Route path="/" element={<LoginWithSpotify onLogin={handleLogin} />} />
           )}
