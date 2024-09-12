@@ -66,7 +66,7 @@ function Dashboard({ accessToken }) {
             <img
               src={topTrack.album.images[0].url}
               alt={topTrack.name}
-              style={{ width: "200px", height: "200px", borderRadius: "10px" }}
+              style={{ width: "20px", height: "20px", borderRadius: "10px" }}
             />
           )}
         </div>
