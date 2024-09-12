@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Playlists from "./Playlists";  // Import the Playlists component
 
 function Dashboard({ accessToken }) {
   const [userInfo, setUserInfo] = useState(null);
@@ -70,6 +71,9 @@ function Dashboard({ accessToken }) {
           )}
         </div>
       )}
+
+      {/* Render Playlists component and pass accessToken as prop */}
+      <Playlists accessToken={accessToken} />
     </div>
   );
 }
