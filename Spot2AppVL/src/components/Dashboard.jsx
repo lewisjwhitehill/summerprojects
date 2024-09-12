@@ -53,7 +53,7 @@ function Dashboard({ accessToken }) {
         <img
           src={userInfo.images[0].url}
           alt="Profile"
-          style={{ borderRadius: "50%", width: "150px", height: "150px" }}
+          style={{ borderRadius: "50%", width: "30px", height: "30px" }}
         />
       )}
 
@@ -66,7 +66,7 @@ function Dashboard({ accessToken }) {
             <img
               src={topTrack.album.images[0].url}
               alt={topTrack.name}
-              style={{ width: "20px", height: "20px", borderRadius: "10px" }}
+              style={{ width: "50px", height: "50px", borderRadius: "10px" }}
             />
           )}
         </div>
