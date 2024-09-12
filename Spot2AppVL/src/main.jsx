@@ -1,12 +1,19 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import Dashboard from "./components/Dashboard.jsx"; 
-import App from './App.jsx'
-import './index.css'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App"; // Assuming you have the App component
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <App />
-    <App />
-  </StrictMode>,
-)
+function Main() {
+  return (
+    <div style={{ display: "flex", justifyContent: "space-between" }}>
+      <App />
+      <App />
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(
+  <React.StrictMode>
+    <Main />
+  </React.StrictMode>
+);
