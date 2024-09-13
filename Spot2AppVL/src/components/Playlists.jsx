@@ -29,20 +29,31 @@ function Playlists({ accessToken }) {
     fetchPlaylists();
   }, [accessToken]); // Re-run the effect when the accessToken changes
 
-  // Render the playlists
+  // Function to handle click on a playlist button
+  const handlePlaylistClick = (playlistId) => {
+    // Implement what should happen when a playlist is clicked
+    console.log("Playlist clicked:", playlistId);
+    // For example, navigate to a playlist page or start playing the playlist
+  };
+
+  // Render the playlists as buttons
   return (
     <div>
       <h2>Your Playlists</h2>
       {playlists.length === 0 ? (
         <p>No playlists found</p>
       ) : (
-        <ul>
+        <div>
           {playlists.map((playlist) => (
-            <li key={playlist.id}>
+            <button
+              key={playlist.id}
+              onClick={() => handlePlaylistClick(playlist.id)}
+              style={{ display: "block", margin: "10px 0" }} // Optional styling
+            >
               {playlist.name} ({playlist.tracks.total} tracks)
-            </li>
+            </button>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );
