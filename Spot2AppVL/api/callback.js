@@ -24,11 +24,10 @@ export default async function handler(req, res) {
   const data = await response.json();
 
   if (data.access_token) {
-    // Redirect to the dashboard with the access token
-    //res.redirect(`/Dashboard`);
-    //window.location.href = "/src/components/Dashboard";
-    res.redirect(`/?access_token=${data.access_token}`);
+    // Include access_token and expires_in in the redirect URL
+    res.redirect(`/?access_token=${data.access_token}&expires_in=${data.expires_in}`);
   } else {
     res.status(400).json({ error: "Authorization failed" });
   }
 }
+
