@@ -1,25 +1,36 @@
 import React, { useEffect, useState } from "react";
 import Playlists from "./Playlists";  // Import the Playlists component
 
-function Dashboard({ accessToken }) {
+function Dashboard({ accessToken, onTokenExpired }) {
   const [userInfo, setUserInfo] = useState(null);
   const [topTrack, setTopTrack] = useState(null);
 
-  // Fetch Spotify user profile data
-  useEffect(() => {
-    if (!accessToken) return;
-
-    const fetchUserInfo = async () => {
+  // Function to check if the token is still valid
+  const checkTokenValidity = async () => {
+    try {
       const response = await fetch("https://api.spotify.com/v1/me", {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       });
-      const data = await response.json();
-      setUserInfo(data);
-    };
 
-    fetchUserInfo();
+      if (response.status === 401) {
+        // If the token is invalid or expired, call the onTokenExpired callback to handle it
+        onTokenExpired();
+      } else {
+        const data = await response.json();
+        setUserInfo(data);
+      }
+    } catch (error) {
+      console.error("Error checking token validity:", error);
+      onTokenExpired(); // Handle errors by assuming token is expired or invalid
+    }
+  };
+
+  // Fetch Spotify user profile data
+  useEffect(() => {
+    if (!accessToken) return;
+    checkTokenValidity(); // Check token validity before fetching data
   }, [accessToken]);
 
   // Fetch user's top track
