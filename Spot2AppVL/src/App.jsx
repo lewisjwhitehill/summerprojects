@@ -35,12 +35,14 @@ function App() {
     const storedSpotifyExpiry = localStorage.getItem("spotifyTokenExpiry");
     if (storedSpotifyToken && storedSpotifyExpiry && Date.now() < storedSpotifyExpiry) {
       setSpotifyAccessToken(storedSpotifyToken);
+      setFromService('spotify'); // Automatically load Spotify dashboard
     }
 
     const storedYouTubeToken = localStorage.getItem("youtubeAccessToken");
     const storedYouTubeExpiry = localStorage.getItem("youtubeTokenExpiry");
     if (storedYouTubeToken && storedYouTubeExpiry && Date.now() < storedYouTubeExpiry) {
       setYouTubeAccessToken(storedYouTubeToken);
+      setFromService('youtube'); // Automatically load YouTube dashboard
     }
   }, []);
 
@@ -53,16 +55,13 @@ function App() {
     const storedSpotifyExpiry = localStorage.getItem("spotifyTokenExpiry");
     if (!storedSpotifyToken || !storedSpotifyExpiry || Date.now() >= storedSpotifyExpiry) {
       // Only handle URL tokens if not found in localStorage
-      if (fromService === 'spotify' || toService === 'spotify') {
+      if (queryParams.has("state") && queryParams.get("state") === "spotify_login") {
         const token = queryParams.get("access_token");
         const expiresIn = queryParams.get("expires_in");
 
         if (token && expiresIn) {
-          if (fromService === 'spotify') {
-            setFromAccessToken(token);
-          } else {
-            setToAccessToken(token);
-          }
+          setFromAccessToken(token);
+          setFromService('spotify'); // Automatically set service
           saveSpotifyToken(token, expiresIn);
           window.history.replaceState({}, document.title, "/");
         }
@@ -74,16 +73,13 @@ function App() {
     const storedYouTubeExpiry = localStorage.getItem("youtubeTokenExpiry");
     if (!storedYouTubeToken || !storedYouTubeExpiry || Date.now() >= storedYouTubeExpiry) {
       // Only handle URL tokens if not found in localStorage
-      if (fromService === 'youtube' || toService === 'youtube') {
+      if (queryParams.has("state") && queryParams.get("state") === "youtube_login") {
         const token = queryParams.get("access_token");
         const expiresIn = queryParams.get("expires_in");
 
         if (token && expiresIn) {
-          if (fromService === 'youtube') {
-            setFromAccessToken(token);
-          } else {
-            setToAccessToken(token);
-          }
+          setFromAccessToken(token);
+          setFromService('youtube'); // Automatically set service
           saveYouTubeToken(token, expiresIn);
           window.history.replaceState({}, document.title, "/");
         }
@@ -101,6 +97,8 @@ function App() {
     setYouTubeAccessToken(null);
     setFromAccessToken(null);
     setToAccessToken(null);
+    setFromService('');
+    setToService('');
   };
 
   return (
@@ -111,46 +109,30 @@ function App() {
       {/* Left Panel: "From" Service */}
       <div className="panel left-panel">
         <h3>Convert From:</h3>
-        <button onClick={() => setFromService('spotify')}>Spotify</button>
-        <button onClick={() => setFromService('youtube')}>YouTube</button>
-
-        {fromService === 'spotify' && (
-          fromAccessToken ? (
-            <Dashboard accessToken={fromAccessToken} />
-          ) : (
-            <LoginWithSpotify onLogin={(token, expiresIn) => setFromAccessToken(token)} />
-          )
-        )}
-
-        {fromService === 'youtube' && (
-          fromAccessToken ? (
-            <YouTubeDashboard accessToken={fromAccessToken} />
-          ) : (
-            <LoginWithYoutube onLogin={(token, expiresIn) => setFromAccessToken(token)} />
-          )
+        {fromService === 'spotify' && spotifyAccessToken ? (
+          <Dashboard accessToken={spotifyAccessToken} />
+        ) : fromService === 'youtube' && youtubeAccessToken ? (
+          <YouTubeDashboard accessToken={youtubeAccessToken} />
+        ) : (
+          <>
+            <button onClick={() => setFromService('spotify')}>Spotify</button>
+            <button onClick={() => setFromService('youtube')}>YouTube</button>
+          </>
         )}
       </div>
 
       {/* Right Panel: "To" Service */}
       <div className="panel right-panel">
         <h3>Convert To:</h3>
-        <button onClick={() => setToService('spotify')}>Spotify</button>
-        <button onClick={() => setToService('youtube')}>YouTube</button>
-
-        {toService === 'spotify' && (
-          toAccessToken ? (
-            <Dashboard accessToken={toAccessToken} />
-          ) : (
-            <LoginWithSpotify onLogin={(token, expiresIn) => setToAccessToken(token)} />
-          )
-        )}
-
-        {toService === 'youtube' && (
-          toAccessToken ? (
-            <YouTubeDashboard accessToken={toAccessToken} />
-          ) : (
-            <LoginWithYoutube onLogin={(token, expiresIn) => setToAccessToken(token)} />
-          )
+        {toService === 'spotify' && spotifyAccessToken ? (
+          <Dashboard accessToken={spotifyAccessToken} />
+        ) : toService === 'youtube' && youtubeAccessToken ? (
+          <YouTubeDashboard accessToken={youtubeAccessToken} />
+        ) : (
+          <>
+            <button onClick={() => setToService('spotify')}>Spotify</button>
+            <button onClick={() => setToService('youtube')}>YouTube</button>
+          </>
         )}
       </div>
     </div>
