@@ -29,56 +29,63 @@ function App() {
     setYouTubeAccessToken(token);
   };
 
+  // Check for stored tokens on mount and set state if valid
+  useEffect(() => {
+    const storedSpotifyToken = localStorage.getItem("spotifyAccessToken");
+    const storedSpotifyExpiry = localStorage.getItem("spotifyTokenExpiry");
+    if (storedSpotifyToken && storedSpotifyExpiry && Date.now() < storedSpotifyExpiry) {
+      setSpotifyAccessToken(storedSpotifyToken);
+    }
+
+    const storedYouTubeToken = localStorage.getItem("youtubeAccessToken");
+    const storedYouTubeExpiry = localStorage.getItem("youtubeTokenExpiry");
+    if (storedYouTubeToken && storedYouTubeExpiry && Date.now() < storedYouTubeExpiry) {
+      setYouTubeAccessToken(storedYouTubeToken);
+    }
+  }, []);
+
   // Token checks and URL handling for Spotify and YouTube
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search);
 
-    // Handle Spotify Token for "from" or "to" service
-    if (fromService === 'spotify' || toService === 'spotify') {
-      const token = queryParams.get("access_token");
-      const expiresIn = queryParams.get("expires_in");
+    // Handle Spotify Token
+    const storedSpotifyToken = localStorage.getItem("spotifyAccessToken");
+    const storedSpotifyExpiry = localStorage.getItem("spotifyTokenExpiry");
+    if (!storedSpotifyToken || !storedSpotifyExpiry || Date.now() >= storedSpotifyExpiry) {
+      // Only handle URL tokens if not found in localStorage
+      if (fromService === 'spotify' || toService === 'spotify') {
+        const token = queryParams.get("access_token");
+        const expiresIn = queryParams.get("expires_in");
 
-      if (token && expiresIn) {
-        if (fromService === 'spotify') {
-          setFromAccessToken(token);
-        } else {
-          setToAccessToken(token);
-        }
-        saveSpotifyToken(token, expiresIn);
-        window.history.replaceState({}, document.title, "/");
-      } else {
-        const storedSpotifyToken = localStorage.getItem("spotifyAccessToken");
-        const storedSpotifyExpiry = localStorage.getItem("spotifyTokenExpiry");
-        if (storedSpotifyToken && storedSpotifyExpiry && Date.now() < storedSpotifyExpiry) {
-          setSpotifyAccessToken(storedSpotifyToken);
-        } else {
-          localStorage.removeItem("spotifyAccessToken");
-          localStorage.removeItem("spotifyTokenExpiry");
+        if (token && expiresIn) {
+          if (fromService === 'spotify') {
+            setFromAccessToken(token);
+          } else {
+            setToAccessToken(token);
+          }
+          saveSpotifyToken(token, expiresIn);
+          window.history.replaceState({}, document.title, "/");
         }
       }
     }
 
-    // Handle YouTube Token for "from" or "to" service
-    if (fromService === 'youtube' || toService === 'youtube') {
-      const token = queryParams.get("access_token");
-      const expiresIn = queryParams.get("expires_in");
+    // Handle YouTube Token
+    const storedYouTubeToken = localStorage.getItem("youtubeAccessToken");
+    const storedYouTubeExpiry = localStorage.getItem("youtubeTokenExpiry");
+    if (!storedYouTubeToken || !storedYouTubeExpiry || Date.now() >= storedYouTubeExpiry) {
+      // Only handle URL tokens if not found in localStorage
+      if (fromService === 'youtube' || toService === 'youtube') {
+        const token = queryParams.get("access_token");
+        const expiresIn = queryParams.get("expires_in");
 
-      if (token && expiresIn) {
-        if (fromService === 'youtube') {
-          setFromAccessToken(token);
-        } else {
-          setToAccessToken(token);
-        }
-        saveYouTubeToken(token, expiresIn);
-        window.history.replaceState({}, document.title, "/");
-      } else {
-        const storedYouTubeToken = localStorage.getItem("youtubeAccessToken");
-        const storedYouTubeExpiry = localStorage.getItem("youtubeTokenExpiry");
-        if (storedYouTubeToken && storedYouTubeExpiry && Date.now() < storedYouTubeExpiry) {
-          setYouTubeAccessToken(storedYouTubeToken);
-        } else {
-          localStorage.removeItem("youtubeAccessToken");
-          localStorage.removeItem("youtubeTokenExpiry");
+        if (token && expiresIn) {
+          if (fromService === 'youtube') {
+            setFromAccessToken(token);
+          } else {
+            setToAccessToken(token);
+          }
+          saveYouTubeToken(token, expiresIn);
+          window.history.replaceState({}, document.title, "/");
         }
       }
     }
