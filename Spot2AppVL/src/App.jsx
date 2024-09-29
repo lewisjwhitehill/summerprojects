@@ -10,6 +10,8 @@ function App() {
   const [toService, setToService] = useState(''); // Target service
   const [spotifyAccessToken, setSpotifyAccessToken] = useState(null);
   const [youtubeAccessToken, setYouTubeAccessToken] = useState(null);
+  const [fromAccessToken, setFromAccessToken] = useState(null); // Access token for "from" service
+  const [toAccessToken, setToAccessToken] = useState(null); // Access token for "to" service
 
   // Function to save Spotify token and expiration time in localStorage
   const saveSpotifyToken = (token, expiresIn) => {
@@ -27,47 +29,78 @@ function App() {
     setYouTubeAccessToken(token);
   };
 
-  // Token checks and URL handling for Spotify and YouTube (similar to your original setup)
+  // Token checks and URL handling for Spotify and YouTube
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search);
-    
-    // Spotify Token Handling
-    const spotifyToken = queryParams.get("access_token");
-    const spotifyExpiresIn = queryParams.get("expires_in");
-    if (spotifyToken && spotifyExpiresIn) {
-      saveSpotifyToken(spotifyToken, spotifyExpiresIn);
-      window.history.replaceState({}, document.title, "/");
-    } else {
-      const storedSpotifyToken = localStorage.getItem("spotifyAccessToken");
-      const storedSpotifyExpiry = localStorage.getItem("spotifyTokenExpiry");
-      if (storedSpotifyToken && storedSpotifyExpiry && Date.now() < storedSpotifyExpiry) {
-        setSpotifyAccessToken(storedSpotifyToken);
+
+    // Handle Spotify Token for "from" or "to" service
+    if (fromService === 'spotify' || toService === 'spotify') {
+      const token = queryParams.get("access_token");
+      const expiresIn = queryParams.get("expires_in");
+
+      if (token && expiresIn) {
+        if (fromService === 'spotify') {
+          setFromAccessToken(token);
+        } else {
+          setToAccessToken(token);
+        }
+        saveSpotifyToken(token, expiresIn);
+        window.history.replaceState({}, document.title, "/");
       } else {
-        localStorage.removeItem("spotifyAccessToken");
-        localStorage.removeItem("spotifyTokenExpiry");
+        const storedSpotifyToken = localStorage.getItem("spotifyAccessToken");
+        const storedSpotifyExpiry = localStorage.getItem("spotifyTokenExpiry");
+        if (storedSpotifyToken && storedSpotifyExpiry && Date.now() < storedSpotifyExpiry) {
+          setSpotifyAccessToken(storedSpotifyToken);
+        } else {
+          localStorage.removeItem("spotifyAccessToken");
+          localStorage.removeItem("spotifyTokenExpiry");
+        }
       }
     }
 
-    // YouTube Token Handling
-    const youtubeToken = queryParams.get("access_token");
-    const youtubeExpiresIn = queryParams.get("expires_in");
-    if (youtubeToken && youtubeExpiresIn) {
-      saveYouTubeToken(youtubeToken, youtubeExpiresIn);
-      window.history.replaceState({}, document.title, "/");
-    } else {
-      const storedYouTubeToken = localStorage.getItem("youtubeAccessToken");
-      const storedYouTubeExpiry = localStorage.getItem("youtubeTokenExpiry");
-      if (storedYouTubeToken && storedYouTubeExpiry && Date.now() < storedYouTubeExpiry) {
-        setYouTubeAccessToken(storedYouTubeToken);
+    // Handle YouTube Token for "from" or "to" service
+    if (fromService === 'youtube' || toService === 'youtube') {
+      const token = queryParams.get("access_token");
+      const expiresIn = queryParams.get("expires_in");
+
+      if (token && expiresIn) {
+        if (fromService === 'youtube') {
+          setFromAccessToken(token);
+        } else {
+          setToAccessToken(token);
+        }
+        saveYouTubeToken(token, expiresIn);
+        window.history.replaceState({}, document.title, "/");
       } else {
-        localStorage.removeItem("youtubeAccessToken");
-        localStorage.removeItem("youtubeTokenExpiry");
+        const storedYouTubeToken = localStorage.getItem("youtubeAccessToken");
+        const storedYouTubeExpiry = localStorage.getItem("youtubeTokenExpiry");
+        if (storedYouTubeToken && storedYouTubeExpiry && Date.now() < storedYouTubeExpiry) {
+          setYouTubeAccessToken(storedYouTubeToken);
+        } else {
+          localStorage.removeItem("youtubeAccessToken");
+          localStorage.removeItem("youtubeTokenExpiry");
+        }
       }
     }
-  }, []);
+  }, [fromService, toService]);
+
+  // Clear all tokens for debugging and testing
+  const clearTokens = () => {
+    localStorage.removeItem("spotifyAccessToken");
+    localStorage.removeItem("spotifyTokenExpiry");
+    localStorage.removeItem("youtubeAccessToken");
+    localStorage.removeItem("youtubeTokenExpiry");
+    setSpotifyAccessToken(null);
+    setYouTubeAccessToken(null);
+    setFromAccessToken(null);
+    setToAccessToken(null);
+  };
 
   return (
     <div className="app-container">
+      {/* Clear Tokens Button for Debugging */}
+      <button onClick={clearTokens}>Clear Tokens</button>
+
       {/* Left Panel: "From" Service */}
       <div className="panel left-panel">
         <h3>Convert From:</h3>
@@ -75,18 +108,18 @@ function App() {
         <button onClick={() => setFromService('youtube')}>YouTube</button>
 
         {fromService === 'spotify' && (
-          spotifyAccessToken ? (
-            <Dashboard accessToken={spotifyAccessToken} />
+          fromAccessToken ? (
+            <Dashboard accessToken={fromAccessToken} />
           ) : (
-            <LoginWithSpotify onLogin={saveSpotifyToken} />
+            <LoginWithSpotify onLogin={(token, expiresIn) => setFromAccessToken(token)} />
           )
         )}
 
         {fromService === 'youtube' && (
-          youtubeAccessToken ? (
-            <YouTubeDashboard accessToken={youtubeAccessToken} />
+          fromAccessToken ? (
+            <YouTubeDashboard accessToken={fromAccessToken} />
           ) : (
-            <LoginWithYoutube onLogin={saveYouTubeToken} />
+            <LoginWithYoutube onLogin={(token, expiresIn) => setFromAccessToken(token)} />
           )
         )}
       </div>
@@ -98,18 +131,18 @@ function App() {
         <button onClick={() => setToService('youtube')}>YouTube</button>
 
         {toService === 'spotify' && (
-          spotifyAccessToken ? (
-            <Dashboard accessToken={spotifyAccessToken} />
+          toAccessToken ? (
+            <Dashboard accessToken={toAccessToken} />
           ) : (
-            <LoginWithSpotify onLogin={saveSpotifyToken} />
+            <LoginWithSpotify onLogin={(token, expiresIn) => setToAccessToken(token)} />
           )
         )}
 
         {toService === 'youtube' && (
-          youtubeAccessToken ? (
-            <YouTubeDashboard accessToken={youtubeAccessToken} />
+          toAccessToken ? (
+            <YouTubeDashboard accessToken={toAccessToken} />
           ) : (
-            <LoginWithYoutube onLogin={saveYouTubeToken} />
+            <LoginWithYoutube onLogin={(token, expiresIn) => setToAccessToken(token)} />
           )
         )}
       </div>
