@@ -32,7 +32,16 @@ function YouTubeDashboard({ accessToken, onTokenExpired }) {
     if (!accessToken) return;
     checkTokenValidity(); // Check token validity before fetching data
   }, [accessToken]);
-
+  
+  useEffect(() => {
+    if (!accessToken) {
+      console.error("Access token is not set");
+      return;
+    }
+    console.log("Access token:", accessToken); // Check if token is being received correctly
+    checkTokenValidity(); // Check token validity before fetching data
+  }, [accessToken]);
+  
   // Fetch user's top video (example: most popular video)
   useEffect(() => {
     if (!accessToken) return;
