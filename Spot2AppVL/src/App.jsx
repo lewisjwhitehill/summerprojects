@@ -1,52 +1,118 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import "./App.css";
-import LoginWithSpotify from "./components/LoginWithSpotify.jsx";
-import Dashboard from "./components/Dashboard.jsx";
+import LoginWithSpotify from "./components/LoginWithSpotify";
+import LoginWithYoutube from "./components/LoginWithYoutube";
+import Dashboard from "./components/Dashboard"; // Spotify Dashboard
+import YouTubeDashboard from "./components/YouTubeDashboard"; // YouTube Dashboard
 
 function App() {
-  const [accessToken, setAccessToken] = useState(null);
+  const [fromService, setFromService] = useState(''); // Source service
+  const [toService, setToService] = useState(''); // Target service
+  const [spotifyAccessToken, setSpotifyAccessToken] = useState(null);
+  const [youtubeAccessToken, setYouTubeAccessToken] = useState(null);
 
-  // Function to set token and expiration time in localStorage
-  const saveToken = (token, expiresIn) => {
-    const expiryTime = Date.now() + expiresIn * 1000; // Convert expiresIn to milliseconds
+  // Function to save Spotify token and expiration time in localStorage
+  const saveSpotifyToken = (token, expiresIn) => {
+    const expiryTime = Date.now() + expiresIn * 1000;
     localStorage.setItem("spotifyAccessToken", token);
     localStorage.setItem("spotifyTokenExpiry", expiryTime);
-    setAccessToken(token);
+    setSpotifyAccessToken(token);
   };
 
-  // Check if token exists in URL or localStorage
+  // Function to save YouTube token and expiration time in localStorage
+  const saveYouTubeToken = (token, expiresIn) => {
+    const expiryTime = Date.now() + expiresIn * 1000;
+    localStorage.setItem("youtubeAccessToken", token);
+    localStorage.setItem("youtubeTokenExpiry", expiryTime);
+    setYouTubeAccessToken(token);
+  };
+
+  // Token checks and URL handling for Spotify and YouTube (similar to your original setup)
   useEffect(() => {
-    // Check if the token is in URL
     const queryParams = new URLSearchParams(window.location.search);
-    const token = queryParams.get("access_token");
-    const expiresIn = queryParams.get("expires_in"); // Assuming the token expiry is passed in the URL as well
-
-    // If token is in URL, save it and clean up the URL
-    if (token && expiresIn) {
-      saveToken(token, expiresIn);
-      window.history.replaceState({}, document.title, "/"); // Clean up the URL
+    
+    // Spotify Token Handling
+    const spotifyToken = queryParams.get("access_token");
+    const spotifyExpiresIn = queryParams.get("expires_in");
+    if (spotifyToken && spotifyExpiresIn) {
+      saveSpotifyToken(spotifyToken, spotifyExpiresIn);
+      window.history.replaceState({}, document.title, "/");
     } else {
-      // Check if token exists in localStorage and is still valid
-      const storedToken = localStorage.getItem("spotifyAccessToken");
-      const storedExpiry = localStorage.getItem("spotifyTokenExpiry");
-
-      if (storedToken && storedExpiry && Date.now() < storedExpiry) {
-        setAccessToken(storedToken); // Token is still valid
+      const storedSpotifyToken = localStorage.getItem("spotifyAccessToken");
+      const storedSpotifyExpiry = localStorage.getItem("spotifyTokenExpiry");
+      if (storedSpotifyToken && storedSpotifyExpiry && Date.now() < storedSpotifyExpiry) {
+        setSpotifyAccessToken(storedSpotifyToken);
       } else {
-        // If token is expired, clear it from localStorage
         localStorage.removeItem("spotifyAccessToken");
         localStorage.removeItem("spotifyTokenExpiry");
+      }
+    }
+
+    // YouTube Token Handling
+    const youtubeToken = queryParams.get("access_token");
+    const youtubeExpiresIn = queryParams.get("expires_in");
+    if (youtubeToken && youtubeExpiresIn) {
+      saveYouTubeToken(youtubeToken, youtubeExpiresIn);
+      window.history.replaceState({}, document.title, "/");
+    } else {
+      const storedYouTubeToken = localStorage.getItem("youtubeAccessToken");
+      const storedYouTubeExpiry = localStorage.getItem("youtubeTokenExpiry");
+      if (storedYouTubeToken && storedYouTubeExpiry && Date.now() < storedYouTubeExpiry) {
+        setYouTubeAccessToken(storedYouTubeToken);
+      } else {
+        localStorage.removeItem("youtubeAccessToken");
+        localStorage.removeItem("youtubeTokenExpiry");
       }
     }
   }, []);
 
   return (
-    <div className="card">
-      {accessToken ? (
-        <Dashboard accessToken={accessToken} />
-      ) : (
-        <LoginWithSpotify onLogin={setAccessToken} />
-      )}
+    <div className="app-container">
+      {/* Left Panel: "From" Service */}
+      <div className="panel left-panel">
+        <h3>Convert From:</h3>
+        <button onClick={() => setFromService('spotify')}>Spotify</button>
+        <button onClick={() => setFromService('youtube')}>YouTube</button>
+
+        {fromService === 'spotify' && (
+          spotifyAccessToken ? (
+            <Dashboard accessToken={spotifyAccessToken} />
+          ) : (
+            <LoginWithSpotify onLogin={saveSpotifyToken} />
+          )
+        )}
+
+        {fromService === 'youtube' && (
+          youtubeAccessToken ? (
+            <YouTubeDashboard accessToken={youtubeAccessToken} />
+          ) : (
+            <LoginWithYoutube onLogin={saveYouTubeToken} />
+          )
+        )}
+      </div>
+
+      {/* Right Panel: "To" Service */}
+      <div className="panel right-panel">
+        <h3>Convert To:</h3>
+        <button onClick={() => setToService('spotify')}>Spotify</button>
+        <button onClick={() => setToService('youtube')}>YouTube</button>
+
+        {toService === 'spotify' && (
+          spotifyAccessToken ? (
+            <Dashboard accessToken={spotifyAccessToken} />
+          ) : (
+            <LoginWithSpotify onLogin={saveSpotifyToken} />
+          )
+        )}
+
+        {toService === 'youtube' && (
+          youtubeAccessToken ? (
+            <YouTubeDashboard accessToken={youtubeAccessToken} />
+          ) : (
+            <LoginWithYoutube onLogin={saveYouTubeToken} />
+          )
+        )}
+      </div>
     </div>
   );
 }

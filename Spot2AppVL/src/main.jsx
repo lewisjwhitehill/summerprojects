@@ -8,7 +8,6 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <div style={{ display: 'flex' }}>
       <App />
-      <App />
     </div>
   </StrictMode>
 );
