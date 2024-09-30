@@ -97,9 +97,14 @@ function App() {
   };
 
   return (
+      
+    
     <div className="app-container">
       {/* Clear Tokens Button for Debugging */}
-      <button onClick={clearTokens}>Clear Tokens</button>
+      <div> 
+        <button onClick={clearTokens}>Clear Tokens</button>
+      </div>
+      
 
       {/* Left Panel: "From" Service */}
       <div className="panel left-panel">
@@ -109,7 +114,7 @@ function App() {
 
         {fromService === 'spotify' && (
           fromAccessToken ? (
-            <Dashboard accessToken={fromAccessToken} />
+            <Dashboard accessToken={fromAccessToken} onTokenExpired={clearTokens}/>
           ) : (
             <LoginWithSpotify onLogin={(token, expiresIn) => setFromAccessToken(token)} />
           )
@@ -117,7 +122,7 @@ function App() {
 
         {fromService === 'youtube' && (
           fromAccessToken ? (
-            <YouTubeDashboard accessToken={fromAccessToken} />
+            <YouTubeDashboard accessToken={fromAccessToken} onTokenExpired={clearTokens} />
           ) : (
             <LoginWithYoutube onLogin={(token, expiresIn) => setFromAccessToken(token)} />
           )
