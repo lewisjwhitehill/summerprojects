@@ -29,6 +29,8 @@ function App() {
     setYouTubeAccessToken(token);
   };
 
+  
+
   // Token checks and URL handling for Spotify and YouTube
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search);
