@@ -3,7 +3,7 @@ import "./App.css";
 import LoginWithSpotify from "./components/LoginWithSpotify";
 import LoginWithYoutube from "./components/LoginWithYoutube";
 import Dashboard from "./components/Dashboard"; // Spotify Dashboard
-import YouTubeDashboard from "./components/YoutubeDashboard"; // YouTube Dashboard
+import YouTubeDashboard from "./components/YouTubeDashboard"; // YouTube Dashboard
 
 function App() {
   const [fromService, setFromService] = useState(''); // Source service
@@ -97,14 +97,11 @@ function App() {
   };
 
   return (
-      
-    
     <div className="app-container">
       {/* Clear Tokens Button for Debugging */}
       <div> 
         <button onClick={clearTokens}>Clear Tokens</button>
       </div>
-      
 
       {/* Left Panel: "From" Service */}
       <div className="panel left-panel">
@@ -114,7 +111,7 @@ function App() {
 
         {fromService === 'spotify' && (
           fromAccessToken ? (
-            <Dashboard accessToken={fromAccessToken} onTokenExpired={clearTokens}/>
+            <Dashboard accessToken={fromAccessToken} onTokenExpired={clearTokens} />
           ) : (
             <LoginWithSpotify onLogin={(token, expiresIn) => setFromAccessToken(token)} />
           )
@@ -150,6 +147,15 @@ function App() {
             <LoginWithYoutube onLogin={(token, expiresIn) => setToAccessToken(token)} />
           )
         )}
+      </div>
+
+      {/* Debugging Section */}
+      <div className="token-debug" style={{ marginTop: "20px", padding: "10px", backgroundColor: "#f1f1f1", textAlign: "center" }}>
+        <h4>Debugging Info</h4>
+        <p><strong>Spotify Access Token (From):</strong> {fromAccessToken || "Not Set"}</p>
+        <p><strong>Spotify Access Token (To):</strong> {toAccessToken || "Not Set"}</p>
+        <p><strong>YouTube Access Token (From):</strong> {fromAccessToken || "Not Set"}</p>
+        <p><strong>YouTube Access Token (To):</strong> {toAccessToken || "Not Set"}</p>
       </div>
     </div>
   );
