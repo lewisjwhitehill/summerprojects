@@ -3,7 +3,7 @@ import "./App.css";
 import LoginWithSpotify from "./components/LoginWithSpotify";
 import LoginWithYoutube from "./components/LoginWithYoutube";
 import Dashboard from "./components/Dashboard"; // Spotify Dashboard
-import YouTubeDashboard from "./components/YouTubeDashboard"; // YouTube Dashboard
+import YouTubeDashboard from "./components/YoutubeDashboard"; // YouTube Dashboard
 
 function App() {
   const [fromService, setFromService] = useState(''); // Source service
