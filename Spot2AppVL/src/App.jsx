@@ -191,15 +191,6 @@ function App() {
           )
         )}
       </div>
-
-      {/* Debugging Section */}
-      <div className="token-debug" style={{ marginTop: "20px", padding: "10px", backgroundColor: "#f1f1f1", textAlign: "center" }}>
-        <h4>Debugging Info</h4>
-        <p><strong>Spotify Access Token (From):</strong> {fromAccessToken || "Not Set"}</p>
-        <p><strong>Spotify Access Token (To):</strong> {toAccessToken || "Not Set"}</p>
-        <p><strong>YouTube Access Token (From):</strong> {fromAccessToken || "Not Set"}</p>
-        <p><strong>YouTube Access Token (To):</strong> {toAccessToken || "Not Set"}</p>
-      </div>
     </div>
   );
 }
