@@ -13,120 +13,62 @@ function App() {
   const [fromAccessToken, setFromAccessToken] = useState(null); // Access token for "from" service
   const [toAccessToken, setToAccessToken] = useState(null); // Access token for "to" service
 
-  // Function to save Spotify token and expiration time in localStorage
-  const saveSpotifyToken = (token, expiresIn) => {
+  const saveToken = (service, token, expiresIn, context) => {
     const expiryTime = Date.now() + expiresIn * 1000;
-    localStorage.setItem("spotifyAccessToken", token);
-    localStorage.setItem("spotifyTokenExpiry", expiryTime);
-    setSpotifyAccessToken(token);
+    localStorage.setItem(`${context}_${service}AccessToken`, token);
+    localStorage.setItem(`${context}_${service}TokenExpiry`, expiryTime);
+    if (context === "from") setFromAccessToken(token);
+    else setToAccessToken(token);
   };
 
-  // Function to save YouTube token and expiration time in localStorage
-  const saveYouTubeToken = (token, expiresIn) => {
-    const expiryTime = Date.now() + expiresIn * 1000;
-    localStorage.setItem("youtubeAccessToken", token);
-    localStorage.setItem("youtubeTokenExpiry", expiryTime);
-    setYouTubeAccessToken(token);
-  };
-
-  // Handle "from" service token separately
   useEffect(() => {
     if (!fromService) return;
-
+  
     const queryParams = new URLSearchParams(window.location.search);
-
-    // Handle Spotify Token for "from" service
-    if (fromService === 'spotify') {
-      const token = queryParams.get("access_token");
-      const expiresIn = queryParams.get("expires_in");
-
-      if (token && expiresIn) {
-        setFromAccessToken(token);
-        saveSpotifyToken(token, expiresIn);
-        window.history.replaceState({}, document.title, "/");
+    const token = queryParams.get("access_token");
+    const expiresIn = queryParams.get("expires_in");
+  
+    if (token && expiresIn) {
+      saveToken(fromService, token, expiresIn, "from");
+      window.history.replaceState({}, document.title, "/");
+    } else {
+      const storedToken = localStorage.getItem(`from_${fromService}AccessToken`);
+      const storedExpiry = localStorage.getItem(`from_${fromService}TokenExpiry`);
+      if (storedToken && storedExpiry && Date.now() < storedExpiry) {
+        setFromAccessToken(storedToken);
       } else {
-        const storedSpotifyToken = localStorage.getItem("spotifyAccessToken");
-        const storedSpotifyExpiry = localStorage.getItem("spotifyTokenExpiry");
-        if (storedSpotifyToken && storedSpotifyExpiry && Date.now() < storedSpotifyExpiry) {
-          setSpotifyAccessToken(storedSpotifyToken);
-        } else {
-          localStorage.removeItem("spotifyAccessToken");
-          localStorage.removeItem("spotifyTokenExpiry");
-        }
+        localStorage.removeItem(`from_${fromService}AccessToken`);
+        localStorage.removeItem(`from_${fromService}TokenExpiry`);
       }
     }
-
-    // Handle YouTube Token for "from" service
-    if (fromService === 'youtube') {
-      const token = queryParams.get("access_token");
-      const expiresIn = queryParams.get("expires_in");
-
-      if (token && expiresIn) {
-        setFromAccessToken(token);
-        saveYouTubeToken(token, expiresIn);
-        window.history.replaceState({}, document.title, "/");
-      } else {
-        const storedYouTubeToken = localStorage.getItem("youtubeAccessToken");
-        const storedYouTubeExpiry = localStorage.getItem("youtubeTokenExpiry");
-        if (storedYouTubeToken && storedYouTubeExpiry && Date.now() < storedYouTubeExpiry) {
-          setYouTubeAccessToken(storedYouTubeToken);
-        } else {
-          localStorage.removeItem("youtubeAccessToken");
-          localStorage.removeItem("youtubeTokenExpiry");
-        }
-      }
-    }
+    console.log("From Service:", fromService, "Token:", fromAccessToken);
+    console.log("To Service:", toService, "Token:", toAccessToken);
   }, [fromService]);
-
-  // Handle "to" service token separately
+  
   useEffect(() => {
     if (!toService) return;
-
+  
     const queryParams = new URLSearchParams(window.location.search);
-
-    // Handle Spotify Token for "to" service
-    if (toService === 'spotify') {
-      const token = queryParams.get("access_token");
-      const expiresIn = queryParams.get("expires_in");
-
-      if (token && expiresIn) {
-        setToAccessToken(token);
-        saveSpotifyToken(token, expiresIn);
-        window.history.replaceState({}, document.title, "/");
+    const token = queryParams.get("access_token");
+    const expiresIn = queryParams.get("expires_in");
+  
+    if (token && expiresIn) {
+      saveToken(toService, token, expiresIn, "to");
+      window.history.replaceState({}, document.title, "/");
+    } else {
+      const storedToken = localStorage.getItem(`to_${toService}AccessToken`);
+      const storedExpiry = localStorage.getItem(`to_${toService}TokenExpiry`);
+      if (storedToken && storedExpiry && Date.now() < storedExpiry) {
+        setToAccessToken(storedToken);
       } else {
-        const storedSpotifyToken = localStorage.getItem("spotifyAccessToken");
-        const storedSpotifyExpiry = localStorage.getItem("spotifyTokenExpiry");
-        if (storedSpotifyToken && storedSpotifyExpiry && Date.now() < storedSpotifyExpiry) {
-          setSpotifyAccessToken(storedSpotifyToken);
-        } else {
-          localStorage.removeItem("spotifyAccessToken");
-          localStorage.removeItem("spotifyTokenExpiry");
-        }
+        localStorage.removeItem(`to_${toService}AccessToken`);
+        localStorage.removeItem(`to_${toService}TokenExpiry`);
       }
     }
-
-    // Handle YouTube Token for "to" service
-    if (toService === 'youtube') {
-      const token = queryParams.get("access_token");
-      const expiresIn = queryParams.get("expires_in");
-
-      if (token && expiresIn) {
-        setToAccessToken(token);
-        saveYouTubeToken(token, expiresIn);
-        window.history.replaceState({}, document.title, "/");
-      } else {
-        const storedYouTubeToken = localStorage.getItem("youtubeAccessToken");
-        const storedYouTubeExpiry = localStorage.getItem("youtubeTokenExpiry");
-        if (storedYouTubeToken && storedYouTubeExpiry && Date.now() < storedYouTubeExpiry) {
-          setYouTubeAccessToken(storedYouTubeToken);
-        } else {
-          localStorage.removeItem("youtubeAccessToken");
-          localStorage.removeItem("youtubeTokenExpiry");
-        }
-      }
-    }
+  console.log("From Service:", fromService, "Token:", fromAccessToken);
+  console.log("To Service:", toService, "Token:", toAccessToken);
   }, [toService]);
-
+  
   // Clear all tokens for debugging and testing
   const clearTokens = () => {
     localStorage.removeItem("spotifyAccessToken");
