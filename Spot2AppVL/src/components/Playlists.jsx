@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 
-function Playlists({ accessToken }) {
+function Playlists({ accessToken, onSelectPlaylist }) {
   const [playlists, setPlaylists] = useState([]);
 
-  // Fetch user's playlists using useEffect
   useEffect(() => {
     if (!accessToken) return;
 
@@ -27,16 +26,13 @@ function Playlists({ accessToken }) {
     };
 
     fetchPlaylists();
-  }, [accessToken]); // Re-run the effect when the accessToken changes
+  }, [accessToken]);
 
-  // Function to handle click on a playlist button
   const handlePlaylistClick = (playlistId) => {
-    // Implement what should happen when a playlist is clicked
     console.log("Playlist clicked:", playlistId);
-    // For example, navigate to a playlist page or start playing the playlist
+    onSelectPlaylist(playlistId); // Notify parent of selected playlist
   };
 
-  // Render the playlists as buttons
   return (
     <div>
       <h2>Your Playlists</h2>
@@ -48,7 +44,7 @@ function Playlists({ accessToken }) {
             <button
               key={playlist.id}
               onClick={() => handlePlaylistClick(playlist.id)}
-              style={{ display: "block", margin: "10px 0" }} // Optional styling
+              style={{ display: "block", margin: "10px 0" }}
             >
               {playlist.name} ({playlist.tracks.total} tracks)
             </button>
