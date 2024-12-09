@@ -4,7 +4,7 @@ import LoginWithSpotify from "./components/LoginWithSpotify";
 import LoginWithYoutube from "./components/LoginWithYoutube";
 import Dashboard from "./components/Dashboard"; // Spotify Dashboard
 import YouTubeDashboard from "./components/YoutubeDashboard"; // YouTube Dashboard
-import YouTubeAddPlaylist from "./components/YouTubeAddPlaylist";
+import YouTubeAddPlaylist from "./components/YoutubeAddPlaylist";
 import Playlists from "./components/Playlists";
 
 function App() {
