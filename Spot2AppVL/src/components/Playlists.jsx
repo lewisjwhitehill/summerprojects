@@ -41,14 +41,14 @@ function Playlists({ accessToken, onSelectPlaylist }) {
       ) : (
         <div>
           {playlists.map((playlist) => (
-            <button
-              key={playlist.id}
-              onClick={() => handlePlaylistClick(playlist.id)}
-              style={{ display: "block", margin: "10px 0" }}
-            >
-              {playlist.name} ({playlist.tracks.total} tracks)
-            </button>
-          ))}
+          <button
+            key={playlist.id}
+            onClick={() => onSelectPlaylist(playlist.id)}
+            style={{ display: "block", margin: "10px 0" }}
+          >
+            {playlist.name} ({playlist.tracks.total} tracks)
+          </button>
+        ))}
         </div>
       )}
     </div>
