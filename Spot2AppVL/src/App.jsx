@@ -118,10 +118,11 @@ function App() {
                 accessToken={fromAccessToken}
                 onSelectPlaylist={handlePlaylistSelection}
               />
-              {selectedPlaylist && toAccessToken ? (
+              {selectedPlaylist && fromService === "spotify" && toService === "youtube" && fromAccessToken && toAccessToken ? (
                 <YouTubeAddPlaylist
                   playlistId={selectedPlaylist}
-                  accessToken={toAccessToken}
+                  spotifyAccessToken={fromAccessToken}   // The Spotify token used to fetch tracks
+                  youtubeAccessToken={toAccessToken}     // The YouTube token used to create the playlist
                 />
               ) : (
                 selectedPlaylist && <p>Please log in to YouTube to proceed.</p>
