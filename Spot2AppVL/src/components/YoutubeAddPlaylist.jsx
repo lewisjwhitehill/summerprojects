@@ -1,4 +1,4 @@
-import { createYouTubePlaylist, searchYouTube, addVideoToPlaylist } from "../../api /youtubeApi";
+import { createYouTubePlaylist, searchYouTube, addVideoToPlaylist } from "../../api/youtubeApi";
 function YouTubeAddPlaylist({ playlistId, spotifyAccessToken, youtubeAccessToken }) {
   useEffect(() => {
     const convertPlaylistToYouTube = async () => {
@@ -32,7 +32,7 @@ function YouTubeAddPlaylist({ playlistId, spotifyAccessToken, youtubeAccessToken
         console.log("Spotify Tracks:", tracks);
 
         // 2. Create a YouTube playlist
-        import { createYouTubePlaylist, searchYouTube, addVideoToPlaylist } from "../utils/youtubeApi";
+        
         const youtubePlaylistId = await createYouTubePlaylist(youtubeAccessToken, "My Converted Playlist");
 
         // 3. For each track, search YouTube and add to the playlist
