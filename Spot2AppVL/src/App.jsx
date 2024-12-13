@@ -5,6 +5,7 @@ import LoginWithYoutube from "./components/LoginWithYoutube";
 import Dashboard from "./components/Dashboard"; // Spotify Dashboard
 import YouTubeDashboard from "./components/YoutubeDashboard"; // YouTube Dashboard
 import YouTubeAddPlaylist from "./components/YoutubeAddPlaylist";
+import SpotifyAddPlaylist from "./components/SpotifyAddPlaylist"; // Ensure this is implemented
 import Playlists from "./components/Playlists";
 
 function App() {
@@ -16,6 +17,8 @@ function App() {
   const [toAccessToken, setToAccessToken] = useState(null); // Access token for "to" service
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
   const [message, setMessage] = useState("");
+
+  const isReadyForConversion = fromService && toService && selectedPlaylist && fromAccessToken && toAccessToken;
 
   const saveToken = (service, token, expiresIn, context) => {
     const expiryTime = Date.now() + expiresIn * 1000;
@@ -44,67 +47,73 @@ function App() {
     setYouTubeAccessToken(null);
     setFromAccessToken(null);
     setToAccessToken(null);
+    setSelectedPlaylist(null);
     setMessage("Tokens have been cleared.");
     setTimeout(() => setMessage(""), 3000);
   };
 
   useEffect(() => {
-    if (!fromService) return;
+    const handleToken = (service, context, setToken) => {
+      const queryParams = new URLSearchParams(window.location.search);
+      const token = queryParams.get("access_token");
+      const expiresIn = queryParams.get("expires_in");
 
-    const queryParams = new URLSearchParams(window.location.search);
-    const token = queryParams.get("access_token");
-    const expiresIn = queryParams.get("expires_in");
-
-    if (token && expiresIn) {
-      saveToken(fromService, token, expiresIn, "from");
-      window.history.replaceState({}, document.title, "/");
-    } else {
-      const storedToken = localStorage.getItem(`from_${fromService}AccessToken`);
-      const storedExpiry = localStorage.getItem(`from_${fromService}TokenExpiry`);
-      if (storedToken && storedExpiry && Date.now() < storedExpiry) {
-        setFromAccessToken(storedToken);
+      if (token && expiresIn) {
+        saveToken(service, token, expiresIn, context);
+        window.history.replaceState({}, document.title, "/");
       } else {
-        localStorage.removeItem(`from_${fromService}AccessToken`);
-        localStorage.removeItem(`from_${fromService}TokenExpiry`);
+        const storedToken = localStorage.getItem(`${context}_${service}AccessToken`);
+        const storedExpiry = localStorage.getItem(`${context}_${service}TokenExpiry`);
+        if (storedToken && storedExpiry && Date.now() < storedExpiry) {
+          setToken(storedToken);
+        } else {
+          localStorage.removeItem(`${context}_${service}AccessToken`);
+          localStorage.removeItem(`${context}_${service}TokenExpiry`);
+        }
       }
+    };
+
+    if (fromService) {
+      handleToken(fromService, "from", setFromAccessToken);
     }
-    console.log("From Service:", fromService, "Token:", fromAccessToken);
-    console.log("To Service:", toService, "Token:", toAccessToken);
-  }, [fromService]);
 
-  useEffect(() => {
-    if (!toService) return;
-
-    const queryParams = new URLSearchParams(window.location.search);
-    const token = queryParams.get("access_token");
-    const expiresIn = queryParams.get("expires_in");
-
-    if (token && expiresIn) {
-      saveToken(toService, token, expiresIn, "to");
-      window.history.replaceState({}, document.title, "/");
-    } else {
-      const storedToken = localStorage.getItem(`to_${toService}AccessToken`);
-      const storedExpiry = localStorage.getItem(`to_${toService}TokenExpiry`);
-      if (storedToken && storedExpiry && Date.now() < storedExpiry) {
-        setToAccessToken(storedToken);
-      } else {
-        localStorage.removeItem(`to_${toService}AccessToken`);
-        localStorage.removeItem(`to_${toService}TokenExpiry`);
-      }
+    if (toService) {
+      handleToken(toService, "to", setToAccessToken);
     }
-    console.log("From Service:", fromService, "Token:", fromAccessToken);
-    console.log("To Service:", toService, "Token:", toAccessToken);
-  }, [toService]);
+  }, [fromService, toService]);
+
+  const renderConversionComponent = () => {
+    if (!selectedPlaylist || !isReadyForConversion) {
+      return <p>Please log in to both services to proceed.</p>;
+    }
+
+    if (fromService === "spotify" && toService === "youtube") {
+      return (
+        <YouTubeAddPlaylist
+          playlistId={selectedPlaylist}
+          spotifyAccessToken={fromAccessToken}
+          youtubeAccessToken={toAccessToken}
+        />
+      );
+    } else if (fromService === "youtube" && toService === "spotify") {
+      return (
+        <SpotifyAddPlaylist
+          playlistId={selectedPlaylist}
+          youtubeAccessToken={fromAccessToken}
+          spotifyAccessToken={toAccessToken}
+        />
+      );
+    }
+    return null;
+  };
 
   return (
     <div className="app-container">
-      {/* Clear Tokens Button with Feedback */}
       <div>
         {message && <p>{message}</p>}
         <button onClick={clearTokens}>Clear Tokens</button>
       </div>
 
-      {/* Left Panel: "From" Service */}
       <div className="panel left-panel">
         <h3>Convert From:</h3>
         <button onClick={() => setFromService("spotify")}>Spotify</button>
@@ -118,59 +127,27 @@ function App() {
                 accessToken={fromAccessToken}
                 onSelectPlaylist={handlePlaylistSelection}
               />
-              {selectedPlaylist && fromService === "spotify" && toService === "youtube" && fromAccessToken && toAccessToken ? (
-                <YouTubeAddPlaylist
-                  playlistId={selectedPlaylist}
-                  spotifyAccessToken={fromAccessToken}   // The Spotify token used to fetch tracks
-                  youtubeAccessToken={toAccessToken}     // The YouTube token used to create the playlist
-                />
-              ) : (
-                selectedPlaylist && <p>Please log in to YouTube to proceed.</p>
-              )}
             </>
           ) : (
-            <LoginWithSpotify
-              onLogin={(token, expiresIn) => setFromAccessToken(token)}
-            />
+            <LoginWithSpotify />
           )
         )}
 
         {fromService === "youtube" && (
           fromAccessToken ? (
-            <YouTubeDashboard accessToken={fromAccessToken} onTokenExpired={clearTokens} />
+            <YouTubeDashboard accessToken={fromAccessToken} />
           ) : (
-            <LoginWithYoutube
-              onLogin={(token, expiresIn) => setFromAccessToken(token)}
-            />
+            <LoginWithYoutube />
           )
         )}
       </div>
 
-      {/* Right Panel: "To" Service */}
       <div className="panel right-panel">
         <h3>Convert To:</h3>
         <button onClick={() => setToService("spotify")}>Spotify</button>
         <button onClick={() => setToService("youtube")}>YouTube</button>
 
-        {toService === "spotify" && (
-          toAccessToken ? (
-            <Dashboard accessToken={toAccessToken} />
-          ) : (
-            <LoginWithSpotify
-              onLogin={(token, expiresIn) => setToAccessToken(token)}
-            />
-          )
-        )}
-
-        {toService === "youtube" && (
-          toAccessToken ? (
-            <YouTubeDashboard accessToken={toAccessToken} />
-          ) : (
-            <LoginWithYoutube
-              onLogin={(token, expiresIn) => setToAccessToken(token)}
-            />
-          )
-        )}
+        {renderConversionComponent()}
       </div>
     </div>
   );
