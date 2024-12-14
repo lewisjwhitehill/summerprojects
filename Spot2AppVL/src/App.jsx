@@ -19,7 +19,6 @@ function App() {
   const isReadyForConversion =
     fromService && toService && selectedPlaylist && fromAccessToken && toAccessToken;
 
-  // Save access token and expiry to localStorage
   const saveToken = (service, token, expiresIn, context) => {
     const expiryTime = Date.now() + expiresIn * 1000;
     localStorage.setItem(`${context}_${service}AccessToken`, token);
@@ -28,24 +27,11 @@ function App() {
     else setToAccessToken(token);
   };
 
-  // Function to handle service selection and persist it
-  const selectService = (service, context) => {
-    if (context === "from") {
-      setFromService(service);
-      localStorage.setItem("fromService", service);
-    } else if (context === "to") {
-      setToService(service);
-      localStorage.setItem("toService", service);
-    }
-  };
-
-  // Handle playlist selection
   const handlePlaylistSelection = (playlistId) => {
     setSelectedPlaylist(playlistId);
     console.log("Selected Playlist ID:", playlistId);
   };
 
-  // Clear all tokens
   const clearTokens = () => {
     ["spotify", "youtube"].forEach((service) => {
       localStorage.removeItem(`${service}AccessToken`);
@@ -55,50 +41,44 @@ function App() {
       localStorage.removeItem(`to_${service}AccessToken`);
       localStorage.removeItem(`to_${service}TokenExpiry`);
     });
-    localStorage.removeItem("fromService");
-    localStorage.removeItem("toService");
 
     setFromAccessToken(null);
     setToAccessToken(null);
-    setFromService("");
-    setToService("");
     setSelectedPlaylist(null);
     setMessage("Tokens have been cleared.");
     setTimeout(() => setMessage(""), 3000);
   };
 
-  // Automatically retrieve tokens and services from localStorage
   useEffect(() => {
     const handleToken = (service, context, setToken) => {
-      const storedToken = localStorage.getItem(`${context}_${service}AccessToken`);
-      const storedExpiry = localStorage.getItem(`${context}_${service}TokenExpiry`);
+      const queryParams = new URLSearchParams(window.location.search);
+      const token = queryParams.get("access_token");
+      const expiresIn = queryParams.get("expires_in");
 
-      if (storedToken && storedExpiry && Date.now() < storedExpiry) {
-        setToken(storedToken); // Set the token in state if valid
+      if (token && expiresIn) {
+        saveToken(service, token, expiresIn, context);
+        window.history.replaceState({}, document.title, "/");
       } else {
-        localStorage.removeItem(`${context}_${service}AccessToken`);
-        localStorage.removeItem(`${context}_${service}TokenExpiry`);
+        const storedToken = localStorage.getItem(`${context}_${service}AccessToken`);
+        const storedExpiry = localStorage.getItem(`${context}_${service}TokenExpiry`);
+        if (storedToken && storedExpiry && Date.now() < storedExpiry) {
+          setToken(storedToken);
+        } else {
+          localStorage.removeItem(`${context}_${service}AccessToken`);
+          localStorage.removeItem(`${context}_${service}TokenExpiry`);
+        }
       }
     };
 
-    // Check "from" service token
     if (fromService) {
       handleToken(fromService, "from", setFromAccessToken);
-    } else {
-      const storedFromService = localStorage.getItem("fromService");
-      if (storedFromService) setFromService(storedFromService);
     }
 
-    // Check "to" service token
     if (toService) {
       handleToken(toService, "to", setToAccessToken);
-    } else {
-      const storedToService = localStorage.getItem("toService");
-      if (storedToService) setToService(storedToService);
     }
   }, [fromService, toService]);
 
-  // Render the conversion component
   const renderConversionComponent = () => {
     if (!selectedPlaylist || !isReadyForConversion) {
       return <p>Please log in to both services to proceed.</p>;
@@ -134,8 +114,8 @@ function App() {
       {/* Left Panel: "From" Service */}
       <div className="panel left-panel">
         <h3>Convert From:</h3>
-        <button onClick={() => selectService("spotify", "from")}>Spotify</button>
-        <button onClick={() => selectService("youtube", "from")}>YouTube</button>
+        <button onClick={() => setFromService("spotify")}>Spotify</button>
+        <button onClick={() => setFromService("youtube")}>YouTube</button>
 
         {fromService === "spotify" && (
           fromAccessToken ? (
@@ -148,7 +128,7 @@ function App() {
             </>
           ) : (
             <LoginWithSpotify
-              onLogin={(token, expiresIn) => saveToken("spotify", token, expiresIn, "from")}
+              onLogin={(token, expiresIn) => setFromAccessToken(token)}
             />
           )
         )}
@@ -158,7 +138,7 @@ function App() {
             <YouTubeDashboard accessToken={fromAccessToken} />
           ) : (
             <LoginWithYoutube
-              onLogin={(token, expiresIn) => saveToken("youtube", token, expiresIn, "from")}
+              onLogin={(token, expiresIn) => setFromAccessToken(token)}
             />
           )
         )}
@@ -167,15 +147,15 @@ function App() {
       {/* Right Panel: "To" Service */}
       <div className="panel right-panel">
         <h3>Convert To:</h3>
-        <button onClick={() => selectService("spotify", "to")}>Spotify</button>
-        <button onClick={() => selectService("youtube", "to")}>YouTube</button>
+        <button onClick={() => setToService("spotify")}>Spotify</button>
+        <button onClick={() => setToService("youtube")}>YouTube</button>
 
         {toService === "spotify" && (
           toAccessToken ? (
             <Dashboard accessToken={toAccessToken} />
           ) : (
             <LoginWithSpotify
-              onLogin={(token, expiresIn) => saveToken("spotify", token, expiresIn, "to")}
+              onLogin={(token, expiresIn) => setToAccessToken(token)}
             />
           )
         )}
@@ -185,7 +165,7 @@ function App() {
             <YouTubeDashboard accessToken={toAccessToken} />
           ) : (
             <LoginWithYoutube
-              onLogin={(token, expiresIn) => saveToken("youtube", token, expiresIn, "to")}
+              onLogin={(token, expiresIn) => setToAccessToken(token)}
             />
           )
         )}
