@@ -16,8 +16,8 @@ function App() {
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
   const [message, setMessage] = useState("");
 
-  const isReadyForConversion =
-    fromService && toService && selectedPlaylist && fromAccessToken && toAccessToken;
+  const isReadyForConversion = fromService && toService && fromAccessToken && toAccessToken;
+
 
   const saveToken = (service, token, expiresIn, context) => {
     const expiryTime = Date.now() + expiresIn * 1000;
@@ -80,20 +80,20 @@ function App() {
   }, [fromService, toService]);
 
   const renderConversionComponent = () => {
-    if (!selectedPlaylist || !isReadyForConversion) {
-      return <p>Please log in to both services to proceed.</p>;
-    }
     console.log("fromService:", fromService);
     console.log("toService:", toService);
     console.log("selectedPlaylist:", selectedPlaylist);
     console.log("fromAccessToken:", fromAccessToken);
     console.log("toAccessToken:", toAccessToken);
   
-    if (!selectedPlaylist || !isReadyForConversion) {
+    if (!isReadyForConversion) {
       return <p>Please log in to both services to proceed.</p>;
     }
   
     if (fromService === "spotify" && toService === "youtube") {
+      if (!selectedPlaylist) {
+        return <p>Please select a Spotify playlist to proceed.</p>;
+      }
       return (
         <YouTubeAddPlaylist
           playlistId={selectedPlaylist}
@@ -104,7 +104,7 @@ function App() {
     } else if (fromService === "youtube" && toService === "spotify") {
       return (
         <SpotifyAddPlaylist
-          playlistId={selectedPlaylist}
+          playlistId={selectedPlaylist} // If required for YouTube
           youtubeAccessToken={fromAccessToken}
           spotifyAccessToken={toAccessToken}
         />
@@ -112,6 +112,7 @@ function App() {
     }
     return null;
   };
+  
     
 
   return (
