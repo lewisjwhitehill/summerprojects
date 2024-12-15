@@ -7,6 +7,7 @@ import YouTubeDashboard from "./components/YoutubeDashboard"; // YouTube Dashboa
 import YouTubeAddPlaylist from "./components/YoutubeAddPlaylist";
 import SpotifyAddPlaylist from "./components/SpotifyAddPlaylist";
 import Playlists from "./components/Playlists";
+import YouTubePlaylists from "./components/YouTubePlaylists";
 
 function App() {
   const [fromService, setFromService] = useState(""); // Source service
@@ -145,7 +146,13 @@ function App() {
 
         {fromService === "youtube" && (
           fromAccessToken ? (
-            <YouTubeDashboard accessToken={fromAccessToken} onSelectPlaylist={handlePlaylistSelection} />
+            <>
+            <YouTubeDashboard accessToken={fromAccessToken}/>
+            <YouTubePlaylists
+                accessToken={fromAccessToken}
+                onSelectPlaylist={handlePlaylistSelection}
+              />
+            </>
           ) : (
             <LoginWithYoutube
               onLogin={(token, expiresIn) => setFromAccessToken(token)}
