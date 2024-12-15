@@ -84,7 +84,7 @@ function Dashboard({ accessToken, onTokenExpired }) {
       )}
 
       {/* Render Playlists component and pass accessToken as prop */}
-      {/* <Playlists accessToken={accessToken} /> */}
+      <Playlists accessToken={accessToken} />
     </div>
   );
 }
