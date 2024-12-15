@@ -47,3 +47,4 @@ const YouTubePlaylists = ({ accessToken }) => {
       </div>
   );
 };
+export default YouTubePlaylists;
