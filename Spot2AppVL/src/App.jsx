@@ -83,7 +83,16 @@ function App() {
     if (!selectedPlaylist || !isReadyForConversion) {
       return <p>Please log in to both services to proceed.</p>;
     }
-
+    console.log("fromService:", fromService);
+    console.log("toService:", toService);
+    console.log("selectedPlaylist:", selectedPlaylist);
+    console.log("fromAccessToken:", fromAccessToken);
+    console.log("toAccessToken:", toAccessToken);
+  
+    if (!selectedPlaylist || !isReadyForConversion) {
+      return <p>Please log in to both services to proceed.</p>;
+    }
+  
     if (fromService === "spotify" && toService === "youtube") {
       return (
         <YouTubeAddPlaylist
@@ -103,6 +112,7 @@ function App() {
     }
     return null;
   };
+    
 
   return (
     <div className="app-container">
