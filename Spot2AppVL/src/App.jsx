@@ -133,14 +133,18 @@ function App() {
           )
         )}
 
-        {fromService === "youtube" && (
-          fromAccessToken ? (
+        {fromService === "youtube" && fromAccessToken ? (
+          <>
             <YouTubeDashboard accessToken={fromAccessToken} />
-          ) : (
-            <LoginWithYoutube
-              onLogin={(token, expiresIn) => setFromAccessToken(token)}
+            <YouTubePlaylists
+              accessToken={fromAccessToken}
+              onSelectPlaylist={handlePlaylistSelection}
             />
-          )
+          </>
+        ) : (
+          <LoginWithYoutube
+            onLogin={(token, expiresIn) => setFromAccessToken(token)}
+          />
         )}
       </div>
 
