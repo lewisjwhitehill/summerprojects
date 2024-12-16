@@ -1,6 +1,6 @@
 export async function searchSpotify(query, accessToken) {
     try {
-        const url = `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=1`;
+        const url = `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=5`;
         const response = await fetch(url, {
             headers: {
                 Authorization: `Bearer ${accessToken}`,
@@ -12,12 +12,22 @@ export async function searchSpotify(query, accessToken) {
         }
 
         const data = await response.json();
-        return data.tracks && data.tracks.items.length > 0 ? data.tracks.items[0] : null;
+        if (data.tracks && data.tracks.items.length > 0) {
+            // Refine match logic
+            const track = data.tracks.items.find(item =>
+                item.name.toLowerCase() === query.split('artist:')[0].toLowerCase() &&
+                item.artists.some(artist => query.includes(`artist:${artist.name}`))
+            );
+            return track || data.tracks.items[0]; // Return the best match or the top result
+        }
+
+        return null; // No results found
     } catch (error) {
         console.error("Error in searchSpotify:", error);
         throw error;
     }
 }
+
 
 export const fetchSpotifyUserId = async (accessToken) => {
     const response = await fetch("https://api.spotify.com/v1/me", {

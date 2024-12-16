@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { createSpotifyPlaylist, searchSpotify, addTrackToPlaylist, fetchSpotifyUserId } from "../../api/spotifyApi";
+import { createSpotifyPlaylist, searchSpotify, addTrackToPlaylist } from "../../api/spotifyApi";
 
 function SpotifyAddPlaylist({ playlistId, youtubeAccessToken, spotifyAccessToken }) {
   useEffect(() => {
@@ -43,14 +43,15 @@ function SpotifyAddPlaylist({ playlistId, youtubeAccessToken, spotifyAccessToken
         // Search Spotify and add tracks
         for (const track of tracks) {
           try {
-            const query = `${track.title} ${track.artist}`;
+            const query = `${track.title} artist:${track.artist}`;
+            console.log("Search Query:", query); // Log the search query
             const spotifyResult = await searchSpotify(query, spotifyAccessToken);
 
             if (spotifyResult && spotifyResult.id) {
               await addTrackToPlaylist(spotifyAccessToken, spotifyPlaylistId, `spotify:track:${spotifyResult.id}`);
               console.log(`Added "${track.title}" to Spotify playlist`);
             } else {
-              console.warn(`No Spotify match found for ${track.title} by ${track.artist}`);
+              console.warn(`No Spotify match found for "${track.title}" by "${track.artist}"`);
             }
           } catch (error) {
             console.error(`Error adding track "${track.title}" to Spotify:`, error);
