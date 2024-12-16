@@ -65,3 +65,5 @@ function SpotifyAddPlaylist({ playlistId, youtubeAccessToken, spotifyAccessToken
 
   return <div><h2>Converting Playlist to Spotify...</h2></div>;
 }
+
+export default SpotifyAddPlaylist;
