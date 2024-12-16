@@ -62,7 +62,7 @@ function YouTubeDashboard({ accessToken, onTokenExpired }) {
       )}
 
       {/* Replace Playlists with YouTubePlaylists */}
-      <YouTubePlaylists accessToken={accessToken} />
+      {/* <YouTubePlaylists accessToken={accessToken} /> */}
     </div>
   );
 }
