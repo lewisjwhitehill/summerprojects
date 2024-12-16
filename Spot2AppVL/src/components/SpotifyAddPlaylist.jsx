@@ -10,22 +10,38 @@ function SpotifyAddPlaylist({ playlistId, youtubeAccessToken, spotifyAccessToken
           return;
         }
 
-        // Fetch playlist items from YouTube
-        const youtubeResponse = await fetch(
+        // 1. Fetch YouTube playlist details to get the playlist title
+        const youtubePlaylistResponse = await fetch(
+          `https://www.googleapis.com/youtube/v3/playlists?part=snippet&id=${playlistId}`,
+          {
+            headers: { Authorization: `Bearer ${youtubeAccessToken}` },
+          }
+        );
+
+        if (!youtubePlaylistResponse.ok) {
+          throw new Error("Failed to fetch YouTube playlist details");
+        }
+
+        const youtubePlaylistData = await youtubePlaylistResponse.json();
+        const youtubePlaylistTitle = youtubePlaylistData.items[0]?.snippet.title || "Converted Playlist";
+        console.log("YouTube Playlist Title:", youtubePlaylistTitle);
+
+        // 2. Fetch playlist items (tracks) from YouTube
+        const youtubeTracksResponse = await fetch(
           `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${playlistId}&maxResults=50`,
           {
             headers: { Authorization: `Bearer ${youtubeAccessToken}` },
           }
         );
 
-        if (!youtubeResponse.ok) {
+        if (!youtubeTracksResponse.ok) {
           throw new Error("Failed to fetch YouTube tracks");
         }
 
-        const youtubeData = await youtubeResponse.json();
+        const youtubeTracksData = await youtubeTracksResponse.json();
 
-        const cleanTitle = (title) => title.replace(/\(.*?\)|\[.*?\]/g, "").trim(); // Remove extra text
-        const cleanArtist = (artist) => artist.replace(/\s-\sTopic$/i, "").trim(); // Remove "- Topic" suffix
+        const cleanTitle = (title) => title.replace(/\(.*?\)|\[.*?\]/g, "").trim();
+        const cleanArtist = (artist) => artist.replace(/\s-\sTopic$/i, "").trim();
 
         const extractArtistAndTitle = (title) => {
           const match = title.match(/^(.*?)\s-\s(.*)$/);
@@ -35,12 +51,11 @@ function SpotifyAddPlaylist({ playlistId, youtubeAccessToken, spotifyAccessToken
           return { artist: null, title: title.trim() };
         };
 
-        // Retrieve enhanced metadata using videoId
+        // Process and clean tracks
         const tracks = [];
-        for (const item of youtubeData.items) {
+        for (const item of youtubeTracksData.items) {
           const videoId = item.snippet.resourceId.videoId;
 
-          // Fetch detailed video metadata
           const videoResponse = await fetch(
             `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}`,
             {
@@ -59,8 +74,8 @@ function SpotifyAddPlaylist({ playlistId, youtubeAccessToken, spotifyAccessToken
           if (videoSnippet) {
             const { artist, title } = extractArtistAndTitle(videoSnippet.title);
             tracks.push({
-              title: cleanTitle(title), // Clean title
-              artist: cleanArtist(artist || videoSnippet.channelTitle), // Clean artist and fallback
+              title: cleanTitle(title),
+              artist: cleanArtist(artist || videoSnippet.channelTitle),
             });
           }
         }
@@ -72,10 +87,10 @@ function SpotifyAddPlaylist({ playlistId, youtubeAccessToken, spotifyAccessToken
 
         console.log("Processed Tracks:", tracks);
 
-        // Create Spotify playlist
-        const spotifyPlaylistId = await createSpotifyPlaylist(spotifyAccessToken, "My Converted Playlist");
+        // 3. Create Spotify playlist with YouTube playlist title
+        const spotifyPlaylistId = await createSpotifyPlaylist(spotifyAccessToken, youtubePlaylistTitle);
 
-        // Search Spotify and add tracks
+        // 4. Search Spotify and add tracks
         for (const track of tracks) {
           try {
             const query = `track:${track.title} artist:${track.artist}`;
