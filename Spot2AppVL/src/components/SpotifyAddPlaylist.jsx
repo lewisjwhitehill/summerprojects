@@ -43,16 +43,17 @@ function SpotifyAddPlaylist({ playlistId, youtubeAccessToken, spotifyAccessToken
         // Search Spotify and add tracks
         for (const track of tracks) {
           try {
-            const query = `${track.title} artist:${track.artist}`;
-            console.log("Search Query:", query); // Log the search query
+            const query = `track:${track.title} artist:${track.artist}`;
+            console.log("Search Query:", query); // Log query for debugging
             const spotifyResult = await searchSpotify(query, spotifyAccessToken);
 
             if (spotifyResult && spotifyResult.id) {
-              await addTrackToPlaylist(spotifyAccessToken, spotifyPlaylistId, `spotify:track:${spotifyResult.id}`);
-              console.log(`Added "${track.title}" to Spotify playlist`);
+                await addTrackToPlaylist(spotifyAccessToken, spotifyPlaylistId, `spotify:track:${spotifyResult.id}`);
+                console.log(`Added "${track.title}" to Spotify playlist`);
             } else {
-              console.warn(`No Spotify match found for "${track.title}" by "${track.artist}"`);
+                console.warn(`No Spotify match found for "${track.title}" by "${track.artist}"`);
             }
+
           } catch (error) {
             console.error(`Error adding track "${track.title}" to Spotify:`, error);
           }
