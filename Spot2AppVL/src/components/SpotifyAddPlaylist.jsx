@@ -24,24 +24,27 @@ function SpotifyAddPlaylist({ playlistId, youtubeAccessToken, spotifyAccessToken
 
         const youtubeData = await youtubeResponse.json();
 
-        // Function to clean title
-        const cleanTitle = (title) => title.replace(/\(.*?\)|\[.*?\]/g, "").trim();
-
-        // Extract artist and title
         const extractArtistAndTitle = (title) => {
-          const match = title.match(/^(.*?)\s-\s(.*)$/); // Matches "Artist - Title"
-          return match ? { artist: match[1], title: match[2] } : { artist: "Unknown Artist", title };
+          // Try to match "Artist - Title" or "Title (feat. Artist)"
+          const match = title.match(/^(.*?)\s-\s(.*)$/);
+          if (match) {
+            return { artist: match[1].trim(), title: match[2].trim() };
+          }
+          return { artist: null, title: title.trim() }; // Return null if artist extraction fails
         };
-
+        
+        const cleanTitle = (title) => title.replace(/\(.*?\)|\[.*?\]/g, "").trim(); // Remove extra text
+        
         const tracks = youtubeData.items
-          .filter(item => item.snippet.title)
+          .filter(item => item.snippet.title) // Ensure title exists
           .map(item => {
             const { artist, title } = extractArtistAndTitle(item.snippet.title);
             return {
               title: cleanTitle(title), // Clean title
-              artist: artist !== "Unknown Artist" ? artist : item.snippet.channelTitle, // Fallback to channel title
+              artist: artist || "Unknown Artist", // Set "Unknown Artist" if extraction fails
             };
           });
+        
 
         if (tracks.length === 0) {
           console.warn("No valid tracks found in YouTube playlist.");
