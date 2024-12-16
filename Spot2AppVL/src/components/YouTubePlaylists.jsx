@@ -9,7 +9,7 @@ function YouTubePlaylists({ accessToken, onSelectPlaylist }) {
     const fetchPlaylists = async () => {
       try {
         const response = await fetch(
-          "https://www.googleapis.com/youtube/v3/playlists?part=snippet&mine=true", 
+          "https://www.googleapis.com/youtube/v3/playlists?part=snippet,contentDetails&mine=true",
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
