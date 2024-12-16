@@ -10,8 +10,8 @@ import Playlists from "./components/Playlists";
 import YouTubePlaylists from "./components/YouTubePlaylists";
 
 function App() {
-  const [fromService, setFromService] = useState(""); 
-  const [toService, setToService] = useState(""); 
+  const [fromService, setFromService] = useState("spotify"); // Default to Spotify for debugging
+  const [toService, setToService] = useState("youtube"); // Default to YouTube for debugging
   const [fromAccessToken, setFromAccessToken] = useState(null);
   const [toAccessToken, setToAccessToken] = useState(null);
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
@@ -21,8 +21,11 @@ function App() {
     const expiryTime = Date.now() + expiresIn * 1000;
     localStorage.setItem(`${context}_${service}AccessToken`, token);
     localStorage.setItem(`${context}_${service}TokenExpiry`, expiryTime);
-    if (context === "from") setFromAccessToken(token);
-    else setToAccessToken(token);
+    if (context === "from") {
+      setFromAccessToken(token);
+    } else {
+      setToAccessToken(token);
+    }
   };
 
   const clearTokens = () => {
@@ -47,13 +50,17 @@ function App() {
       const expiresIn = queryParams.get("expires_in");
 
       if (token && expiresIn) {
+        console.log(`[AutoLogin] Saving token for ${context} ${service}`);
         saveToken(service, token, expiresIn, context);
         window.history.replaceState({}, document.title, "/");
       } else {
         const storedToken = localStorage.getItem(`${context}_${service}AccessToken`);
         const storedExpiry = localStorage.getItem(`${context}_${service}TokenExpiry`);
         if (storedToken && storedExpiry && Date.now() < storedExpiry) {
+          console.log(`[AutoLogin] Using stored token for ${context} ${service}`);
           setToken(storedToken);
+        } else {
+          console.log(`[AutoLogin] No valid token found for ${context} ${service}`);
         }
       }
     };
@@ -111,7 +118,7 @@ function App() {
             <Playlists accessToken={fromAccessToken} onSelectPlaylist={handlePlaylistSelection} />
           </>
         ) : (
-          fromService === "spotify" && <LoginWithSpotify onLogin={(token, expiresIn) => setFromAccessToken(token)} />
+          fromService === "spotify" && <LoginWithSpotify />
         )}
 
         {fromService === "youtube" && fromAccessToken ? (
@@ -120,7 +127,7 @@ function App() {
             <YouTubePlaylists accessToken={fromAccessToken} onSelectPlaylist={handlePlaylistSelection} />
           </>
         ) : (
-          fromService === "youtube" && <LoginWithYoutube onLogin={(token, expiresIn) => setFromAccessToken(token)} />
+          fromService === "youtube" && <LoginWithYoutube />
         )}
       </div>
 
@@ -133,13 +140,13 @@ function App() {
         {toService === "spotify" && toAccessToken ? (
           <Dashboard accessToken={toAccessToken} />
         ) : (
-          toService === "spotify" && <LoginWithSpotify onLogin={(token, expiresIn) => setToAccessToken(token)} />
+          toService === "spotify" && <LoginWithSpotify />
         )}
 
         {toService === "youtube" && toAccessToken ? (
           <YouTubeDashboard accessToken={toAccessToken} />
         ) : (
-          toService === "youtube" && <LoginWithYoutube onLogin={(token, expiresIn) => setToAccessToken(token)} />
+          toService === "youtube" && <LoginWithYoutube />
         )}
       </div>
 
