@@ -24,6 +24,9 @@ function SpotifyAddPlaylist({ playlistId, youtubeAccessToken, spotifyAccessToken
 
         const youtubeData = await youtubeResponse.json();
 
+        // Function to clean title
+        const cleanTitle = (title) => title.replace(/\(.*?\)|\[.*?\]/g, "").trim();
+
         // Extract artist and title
         const extractArtistAndTitle = (title) => {
           const match = title.match(/^(.*?)\s-\s(.*)$/); // Matches "Artist - Title"
@@ -35,7 +38,7 @@ function SpotifyAddPlaylist({ playlistId, youtubeAccessToken, spotifyAccessToken
           .map(item => {
             const { artist, title } = extractArtistAndTitle(item.snippet.title);
             return {
-              title,
+              title: cleanTitle(title), // Clean title
               artist: artist !== "Unknown Artist" ? artist : item.snippet.channelTitle, // Fallback to channel title
             };
           });
@@ -53,15 +56,24 @@ function SpotifyAddPlaylist({ playlistId, youtubeAccessToken, spotifyAccessToken
         // Search Spotify and add tracks
         for (const track of tracks) {
           try {
+            // Primary search query
             const query = `track:${track.title} artist:${track.artist}`;
             console.log("Search Query:", query); // Log query for debugging
-            const spotifyResult = await searchSpotify(query, spotifyAccessToken);
+
+            let spotifyResult = await searchSpotify(query, spotifyAccessToken);
+
+            // Fallback if no match found
+            if (!spotifyResult) {
+              console.warn(`No exact match found for "${track.title}" by "${track.artist}". Trying fallback query.`);
+              const fallbackQuery = `${track.title} ${track.artist}`;
+              spotifyResult = await searchSpotify(fallbackQuery, spotifyAccessToken);
+            }
 
             if (spotifyResult && spotifyResult.id) {
               await addTrackToPlaylist(spotifyAccessToken, spotifyPlaylistId, `spotify:track:${spotifyResult.id}`);
               console.log(`Added "${track.title}" to Spotify playlist`);
             } else {
-              console.warn(`No Spotify match found for "${track.title}" by "${track.artist}"`);
+              console.warn(`No Spotify match found for "${track.title}" by "${track.artist}" even after fallback.`);
             }
           } catch (error) {
             console.error(`Error adding track "${track.title}" to Spotify:`, error);
