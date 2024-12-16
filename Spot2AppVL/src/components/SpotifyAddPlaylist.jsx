@@ -1,3 +1,6 @@
+import React, { useEffect } from "react";
+import { createSpotifyPlaylist, searchSpotify, addTrackToPlaylist, fetchSpotifyUserId } from "../../api/spotifyApi";
+
 function SpotifyAddPlaylist({ playlistId, youtubeAccessToken, spotifyAccessToken }) {
   useEffect(() => {
     const convertPlaylistToSpotify = async () => {
