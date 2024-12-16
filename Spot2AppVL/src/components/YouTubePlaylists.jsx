@@ -1,69 +1,61 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from "react";
 
-const YouTubePlaylists = ({ accessToken }) => {
+function YouTubePlaylists({ accessToken, onSelectPlaylist }) {
   const [playlists, setPlaylists] = useState([]);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!accessToken) return;
+
     const fetchPlaylists = async () => {
       try {
-        const response = await fetch(`/api/fetchYouTubePlaylists?access_token=${accessToken}`);
-        const data = await response.json();
+        const response = await fetch(
+          "https://www.googleapis.com/youtube/v3/playlists?part=snippet&mine=true", 
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
 
-        if (data.playlists) {
-          setPlaylists(data.playlists);
-          setError(null);
-        } else {
-          setError(data.error || "Failed to fetch playlists.");
+        if (!response.ok) {
+          throw new Error("Failed to fetch playlists");
         }
-      } catch (err) {
-        console.error("Error fetching YouTube playlists:", err);
-        setError("An error occurred while fetching playlists.");
-      } finally {
-        setLoading(false);
+
+        const data = await response.json();
+        setPlaylists(data.items || []); // Set the list of playlists, or an empty array if no items
+      } catch (error) {
+        console.error("Error fetching YouTube playlists:", error);
       }
     };
 
-    if (accessToken) {
-      fetchPlaylists();
-    }
+    fetchPlaylists();
   }, [accessToken]);
 
-  if (loading) return <p>Loading playlists...</p>;
-  if (error) return <p>{error}</p>;
+  const handlePlaylistClick = (playlistId) => {
+    console.log("YouTube Playlist clicked:", playlistId);
+    onSelectPlaylist(playlistId); // Notify parent of selected playlist
+  };
 
   return (
     <div>
       <h2>Your YouTube Playlists</h2>
-      {playlists.length > 0 ? (
+      {playlists.length === 0 ? (
+        <p>No playlists found</p>
+      ) : (
         <div>
           {playlists.map((playlist) => (
             <button
               key={playlist.id}
-              onClick={() => console.log(`Selected Playlist ID: ${playlist.id}`)}
-              style={{
-                display: "block",
-                margin: "10px 0",
-                padding: "10px",
-                backgroundColor: "#1DB954",
-                color: "white",
-                border: "none",
-                borderRadius: "5px",
-                cursor: "pointer",
-                textAlign: "left",
-                width: "100%",
-              }}
+              onClick={() => handlePlaylistClick(playlist.id)}
+              style={{ display: "block", margin: "10px 0" }}
             >
-              {playlist.snippet.title}
+              {playlist.snippet.title} ({playlist.contentDetails?.itemCount || 0} videos)
             </button>
           ))}
         </div>
-      ) : (
-        <p>No playlists found.</p>
       )}
     </div>
   );
-};
+}
 
 export default YouTubePlaylists;
