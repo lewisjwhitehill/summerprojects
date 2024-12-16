@@ -25,6 +25,8 @@ function SpotifyAddPlaylist({ playlistId, youtubeAccessToken, spotifyAccessToken
         const youtubeData = await youtubeResponse.json();
 
         const cleanTitle = (title) => title.replace(/\(.*?\)|\[.*?\]/g, "").trim(); // Remove extra text
+        const cleanArtist = (artist) => artist.replace(/\s-\sTopic$/i, "").trim(); // Remove "- Topic" suffix
+
         const extractArtistAndTitle = (title) => {
           const match = title.match(/^(.*?)\s-\s(.*)$/);
           if (match) {
@@ -58,7 +60,7 @@ function SpotifyAddPlaylist({ playlistId, youtubeAccessToken, spotifyAccessToken
             const { artist, title } = extractArtistAndTitle(videoSnippet.title);
             tracks.push({
               title: cleanTitle(title), // Clean title
-              artist: artist || videoSnippet.channelTitle, // Fallback to channel title if artist is unknown
+              artist: cleanArtist(artist || videoSnippet.channelTitle), // Clean artist and fallback
             });
           }
         }
