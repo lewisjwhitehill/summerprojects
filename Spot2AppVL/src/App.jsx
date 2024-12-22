@@ -3,8 +3,8 @@ import "./App.css";
 import LoginWithSpotify from "./components/LoginWithSpotify";
 import LoginWithYoutube from "./components/LoginWithYoutube";
 import Dashboard from "./components/Dashboard"; // Spotify Dashboard
-import YouTubeDashboard from "./components/YouTubeDashboard"; // YouTube Dashboard
-import YouTubeAddPlaylist from "./components/YouTubeAddPlaylist";
+import YouTubeDashboard from "./components/YoutubeDashboard"; // YouTube Dashboard
+import YouTubeAddPlaylist from "./components/YoutubeAddPlaylist";
 import SpotifyAddPlaylist from "./components/SpotifyAddPlaylist";
 import Playlists from "./components/Playlists";
 import YouTubePlaylists from "./components/YouTubePlaylists";
@@ -123,7 +123,10 @@ function App() {
           <p>Please log in to both services to proceed.</p>
         </div>
       )}
+
+      {/* Div for both panels for formatting*/}
       <div className="panels-container">
+
         {/* Left Panel: "From" Service */}
         <div className="panel left-panel">
           <h3>Convert From:</h3>
