@@ -128,8 +128,8 @@ function App() {
       <div className="panels-container">
 
         {/* Left Panel: "From" Service */}
-        <div className="panel left-panel">
-          <h3>Convert From:</h3>
+        <div className={`panel left-panel ${fromService === "spotify" ? "from-spotify" : fromService === "youtube" ? "from-youtube" : ""}`}>
+        <h3>Convert From:</h3>
           <button onClick={() => setFromService("spotify")}>Spotify</button>
           <button onClick={() => setFromService("youtube")}>YouTube</button>
 
@@ -167,7 +167,7 @@ function App() {
         </div>
 
         {/* Right Panel: "To" Service */}
-        <div className="panel right-panel">
+        <div className={`panel right-panel ${toService === "spotify" ? "to-spotify" : toService === "youtube" ? "to-youtube" : ""}`}>
           <h3>Convert To:</h3>
           <button onClick={() => setToService("spotify")}>Spotify</button>
           <button onClick={() => setToService("youtube")}>YouTube</button>

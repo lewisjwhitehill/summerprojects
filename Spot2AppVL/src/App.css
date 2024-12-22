@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Titillium+Web:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700&display=swap');
+
 /* Existing Styles */
 #root {
   max-width: 1280px;
@@ -50,6 +52,7 @@
 }
 
 .banner {
+  font-family: 'Titillium Web', sans-serif;
   position: absolute; /* Stays at the top of the viewport */
   top: 0;
   left: 0;
@@ -58,6 +61,7 @@
   color: white;
   text-align: center;
   padding: 1rem 0;
+ 
   font-size: 1.5rem;
   font-weight: bold;
   z-index: 1000; /* Ensure it stays on top of other elements */
@@ -77,8 +81,28 @@
 
 .panel {
   flex: 1;
-  padding: 20px;
   overflow-y: auto;
+  border: 3px solid transparent;
+  padding: 20px;
+  transition: border 0.3s ease;
+}
+
+/* Border color for "from" panel */
+.from-spotify {
+  border-color: #1DB954; /* Spotify Green */
+}
+
+.from-youtube {
+  border-color: #FF0000; /* YouTube Red */
+}
+
+/* Border color for "to" panel */
+.to-spotify {
+  border-color: #1DB954; /* Spotify Green */
+}
+
+.to-youtube {
+  border-color: #FF0000; /* YouTube Red */
 }
 
 /* Darker gray for the left panel */
@@ -94,6 +118,7 @@
 }
 
 .floating-clear-tokens {
+  
   position: fixed; /* Makes it float */
   top: 20px;
   left: 20px;
