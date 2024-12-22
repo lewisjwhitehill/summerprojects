@@ -3,8 +3,8 @@ import "./App.css";
 import LoginWithSpotify from "./components/LoginWithSpotify";
 import LoginWithYoutube from "./components/LoginWithYoutube";
 import Dashboard from "./components/Dashboard"; // Spotify Dashboard
-import YouTubeDashboard from "./components/YoutubeDashboard"; // YouTube Dashboard
-import YouTubeAddPlaylist from "./components/YoutubeAddPlaylist";
+import YouTubeDashboard from "./components/YouTubeDashboard"; // YouTube Dashboard
+import YouTubeAddPlaylist from "./components/YouTubeAddPlaylist";
 import SpotifyAddPlaylist from "./components/SpotifyAddPlaylist";
 import Playlists from "./components/Playlists";
 import YouTubePlaylists from "./components/YouTubePlaylists";
@@ -18,7 +18,6 @@ function App() {
   const [message, setMessage] = useState("");
 
   const isReadyForConversion = fromService && toService && fromAccessToken && toAccessToken;
-
 
   const saveToken = (service, token, expiresIn, context) => {
     const expiryTime = Date.now() + expiresIn * 1000;
@@ -81,18 +80,9 @@ function App() {
   }, [fromService, toService]);
 
   const renderConversionComponent = () => {
-    if (!selectedPlaylist || !isReadyForConversion) {
+    /*if (!selectedPlaylist || !isReadyForConversion) {
       return <p>Please log in to both services to proceed.</p>;
-    }
-    console.log("fromService:", fromService);
-    console.log("toService:", toService);
-    console.log("selectedPlaylist:", selectedPlaylist);
-    console.log("fromAccessToken:", fromAccessToken);
-    console.log("toAccessToken:", toAccessToken);
-  
-    if (!selectedPlaylist || !isReadyForConversion) {
-      return <p>Please log in to both services to proceed.</p>;
-    }
+    }*/
   
     if (fromService === "spotify" && toService === "youtube") {
       return (
@@ -113,79 +103,93 @@ function App() {
     }
     return null;
   };
-    
 
   return (
     <div className="app-container">
+      
+      {/* Add the banner */}
+      <div className="banner">Playlist Converter</div>
+
       <div>
         {message && <p>{message}</p>}
-        <button onClick={clearTokens}>Clear Tokens</button>
+        <button className="floating-clear-tokens" onClick={clearTokens}>
+          Clear Tokens
+        </button>
       </div>
 
-      {/* Left Panel: "From" Service */}
-      <div className="panel left-panel">
-        <h3>Convert From:</h3>
-        <button onClick={() => setFromService("spotify")}>Spotify</button>
-        <button onClick={() => setFromService("youtube")}>YouTube</button>
+      {/* Display login message if necessary */}
+      {(!fromService || !toService || !fromAccessToken || !toAccessToken) && (
+        <div className="login-message">
+          <p>Please log in to both services to proceed.</p>
+        </div>
+      )}
+      <div className="panels-container">
+        {/* Left Panel: "From" Service */}
+        <div className="panel left-panel">
+          <h3>Convert From:</h3>
+          <button onClick={() => setFromService("spotify")}>Spotify</button>
+          <button onClick={() => setFromService("youtube")}>YouTube</button>
 
-        {fromService === "spotify" && (
-          fromAccessToken ? (
-            <>
-              <Dashboard accessToken={fromAccessToken} onTokenExpired={clearTokens} />
-              <Playlists
-                accessToken={fromAccessToken}
-                onSelectPlaylist={handlePlaylistSelection}
+          {fromService === "spotify" && (
+            fromAccessToken ? (
+              <>
+                <Dashboard accessToken={fromAccessToken} onTokenExpired={clearTokens} />
+                <Playlists
+                  accessToken={fromAccessToken}
+                  onSelectPlaylist={handlePlaylistSelection}
+                />
+              </>
+            ) : (
+              <LoginWithSpotify
+                onLogin={(token, expiresIn) => setFromAccessToken(token)}
               />
-            </>
-          ) : (
-            <LoginWithSpotify
-              onLogin={(token, expiresIn) => setFromAccessToken(token)}
-            />
-          )
-        )}
+            )
+          )}
 
-        {fromService === "youtube" && (
-          fromAccessToken ? (
-            <>
-            <YouTubeDashboard accessToken={fromAccessToken}/>
-            <YouTubePlaylists
-                accessToken={fromAccessToken}
-                onSelectPlaylist={handlePlaylistSelection}
+          {fromService === "youtube" && (
+            fromAccessToken ? (
+              <>
+              <YouTubeDashboard accessToken={fromAccessToken}/>
+              <YouTubePlaylists
+                  accessToken={fromAccessToken}
+                  onSelectPlaylist={handlePlaylistSelection}
+                />
+              </>
+            ) : (
+              <LoginWithYoutube
+                onLogin={(token, expiresIn) => setFromAccessToken(token)}
               />
-            </>
-          ) : (
-            <LoginWithYoutube
-              onLogin={(token, expiresIn) => setFromAccessToken(token)}
-            />
-          )
-        )}
-      </div>
+            )
+          )}
+        </div>
 
-      {/* Right Panel: "To" Service */}
-      <div className="panel right-panel">
-        <h3>Convert To:</h3>
-        <button onClick={() => setToService("spotify")}>Spotify</button>
-        <button onClick={() => setToService("youtube")}>YouTube</button>
+        {/* Right Panel: "To" Service */}
+        <div className="panel right-panel">
+          <h3>Convert To:</h3>
+          <button onClick={() => setToService("spotify")}>Spotify</button>
+          <button onClick={() => setToService("youtube")}>YouTube</button>
 
-        {toService === "spotify" && (
-          toAccessToken ? (
-            <Dashboard accessToken={toAccessToken} />
-          ) : (
-            <LoginWithSpotify
-              onLogin={(token, expiresIn) => setToAccessToken(token)}
-            />
-          )
-        )}
+          {toService === "spotify" && (
+            toAccessToken ? (
+              <Dashboard accessToken={toAccessToken} />
+            ) : (
+              <LoginWithSpotify
+                onLogin={(token, expiresIn) => setToAccessToken(token)}
+              />
+            )
+          )}
 
-        {toService === "youtube" && (
-          toAccessToken ? (
-            <YouTubeDashboard accessToken={toAccessToken} />
-          ) : (
-            <LoginWithYoutube
-              onLogin={(token, expiresIn) => setToAccessToken(token)}
-            />
-          )
-        )}
+          {toService === "youtube" && (
+            toAccessToken ? (
+              <YouTubeDashboard accessToken={toAccessToken} />
+            ) : (
+              <LoginWithYoutube
+                onLogin={(token, expiresIn) => setToAccessToken(token)}
+              />
+            )
+          )}
+        </div>
+
       </div>
 
       {/* Conversion Component */}

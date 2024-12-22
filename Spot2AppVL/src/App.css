@@ -45,7 +45,34 @@
 /* New Split-Screen Layout Styles with Darker Backgrounds */
 .app-container {
   display: flex;
-  height: 100vh;
+  flex-direction: column; /* Stack children vertically */
+  align-items: stretch; /* Stretch children to fit the container width */
+}
+
+.banner {
+  position: absolute; /* Stays at the top of the viewport */
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: #1db954; /* Spotify green */
+  color: white;
+  text-align: center;
+  padding: 1rem 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+  z-index: 1000; /* Ensure it stays on top of other elements */
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2); /* Optional: Adds shadow */
+}
+
+.content {
+  margin-top: 4rem; /* Push content down to make space for the banner */
+  padding: 1rem; /* Add padding around the content */
+}
+
+.panels-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 .panel {
@@ -65,3 +92,32 @@
   background-color: #3a3a3a; /* Lighter dark gray */
   color: #f0f0f0; /* Light text for contrast */
 }
+
+.floating-clear-tokens {
+  position: fixed; /* Makes it float */
+  top: 20px;
+  left: 20px;
+  z-index: 1000; /* Ensures it stays on top of other elements */
+  padding: 10px 15px;
+  background-color: #ff5757; /* A noticeable color */
+  color: #fff; /* White text */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+}
+
+.floating-clear-tokens:hover {
+  background-color: #ff2d2d; /* Darker shade on hover */
+}
+
+.login-message {
+  left: 20;
+  text-align: center;
+  font-size: 1.2rem;
+  color: #ff5757; /* Red for visibility */
+  margin-bottom: 1rem;
+
+}
+

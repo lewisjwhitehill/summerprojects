@@ -6,7 +6,7 @@ import './index.css'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <div style={{ display: 'flex' }}>
+    <div>
       <App />
     </div>
   </StrictMode>
