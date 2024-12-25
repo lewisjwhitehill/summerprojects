@@ -133,8 +133,8 @@ function App() {
         {!fromAccessToken && (
               <>
               <h3>Convert To:</h3>
-              <button onClick={() => setToService("spotify")}>Spotify</button>
-              <button onClick={() => setToService("youtube")}>YouTube</button>
+              <button onClick={() => setFromService("spotify")}>Spotify</button>
+              <button onClick={() => setFromService("youtube")}>YouTube</button>
               </>
         )}      
 
