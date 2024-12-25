@@ -118,11 +118,11 @@ function App() {
       </div>
 
       {/* Display login message if necessary */}
-      {(!fromService || !toService || !fromAccessToken || !toAccessToken) && (
+      {(!fromService || !toService || !fromAccessToken || !toAccessToken) ? (
         <div className="login-message">
           <p>Please log in to both services to proceed.</p>
         </div>
-      )}
+      ) : (<h1></h1>)}
 
       {/* Div for both panels for formatting*/}
       <div className="panels-container">
