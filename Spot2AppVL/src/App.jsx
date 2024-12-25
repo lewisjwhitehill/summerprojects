@@ -130,17 +130,15 @@ function App() {
         {/* Left Panel: "From" Service */}
         <div className={`panel left-panel ${fromService === "spotify" ? "from-spotify" : fromService === "youtube" ? "from-youtube" : ""}`}>
 
+        {/* Only display this if there's no access token already */}
         {!fromAccessToken && (
               <>
-              <h3>Convert To:</h3>
+              <h3>Convert From:</h3>
               <button onClick={() => setFromService("spotify")}>Spotify</button>
               <button onClick={() => setFromService("youtube")}>YouTube</button>
               </>
         )}      
 
-        {/* <h3>Convert From:</h3>
-          <button onClick={() => setFromService("spotify")}>Spotify</button>
-          <button onClick={() => setFromService("youtube")}>YouTube</button> */}
 
           {fromService === "spotify" && (
             fromAccessToken ? (
