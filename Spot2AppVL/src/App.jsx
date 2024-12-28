@@ -19,6 +19,23 @@ function App() {
 
   const isReadyForConversion = fromService && toService && fromAccessToken && toAccessToken;
 
+  useEffect(() => {
+    const fromToken = localStorage.getItem("from_spotifyAccessToken");
+    const fromTokenExpiry = localStorage.getItem("from_spotifyTokenExpiry");
+    const toToken = localStorage.getItem("to_youtubeAccessToken");
+    const toTokenExpiry = localStorage.getItem("to_youtubeTokenExpiry");
+
+    if (fromToken && fromTokenExpiry > Date.now()) {
+      setFromAccessToken(fromToken);
+      setFromService("spotify");
+    }
+
+    if (toToken && toTokenExpiry > Date.now()) {
+      setToAccessToken(toToken);
+      setToService("youtube");
+    }
+  }, []);
+
   const saveToken = (service, token, expiresIn, context) => {
     const expiryTime = Date.now() + expiresIn * 1000;
     localStorage.setItem(`${context}_${service}AccessToken`, token);
