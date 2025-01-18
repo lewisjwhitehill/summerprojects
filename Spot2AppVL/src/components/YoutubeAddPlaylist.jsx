@@ -73,7 +73,7 @@ function YouTubeAddPlaylist({ playlistId, spotifyAccessToken, youtubeAccessToken
 
   return (
     <div>
-      <h2>Converting Playlist to YouTube...</h2>
+      
     </div>
   );
 }
