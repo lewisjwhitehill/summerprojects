@@ -50,37 +50,34 @@ function App() {
   };
 
   useEffect(() => {
-    const queryParams = new URLSearchParams(window.location.search);
-    const token = queryParams.get("access_token");
-    const expiresIn = queryParams.get("expires_in");
-    const service = queryParams.get("service"); // "spotify" or "youtube"
-    const context = queryParams.get("context"); // "from" or "to"
-  
-    console.log("OAuth Redirect Params:", { token, expiresIn, service, context });
-  
-    if (token && expiresIn && service && context) {
-      console.log(`Saving ${service} token for ${context}...`);
-      saveToken(service, token, parseInt(expiresIn), context);
-      window.history.replaceState({}, document.title, "/"); // Clean up URL
+    const handleToken = (service, context, setToken) => {
+      const queryParams = new URLSearchParams(window.location.search);
+      const token = queryParams.get("access_token");
+      const expiresIn = queryParams.get("expires_in");
+
+      if (token && expiresIn) {
+        saveToken(service, token, expiresIn, context);
+        window.history.replaceState({}, document.title, "/");
+      } else {
+        const storedToken = localStorage.getItem(`${context}_${service}AccessToken`);
+        const storedExpiry = localStorage.getItem(`${context}_${service}TokenExpiry`);
+        if (storedToken && storedExpiry && Date.now() < storedExpiry) {
+          setToken(storedToken);
+        } else {
+          localStorage.removeItem(`${context}_${service}AccessToken`);
+          localStorage.removeItem(`${context}_${service}TokenExpiry`);
+        }
+      }
+    };
+
+    if (fromService) {
+      handleToken(fromService, "from", setFromAccessToken);
     }
-  
-    ["spotify", "youtube"].forEach((service) => {
-      const fromToken = localStorage.getItem(`from_${service}AccessToken`);
-      const fromExpiry = parseInt(localStorage.getItem(`from_${service}TokenExpiry`)) || 0;
-      if (fromToken && Date.now() < fromExpiry) {
-        setFromAccessToken(fromToken);
-        setFromService(service);
-      }
-  
-      const toToken = localStorage.getItem(`to_${service}AccessToken`);
-      const toExpiry = parseInt(localStorage.getItem(`to_${service}TokenExpiry`)) || 0;
-      if (toToken && Date.now() < toExpiry) {
-        setToAccessToken(toToken);
-        setToService(service);
-      }
-    });
-  }, []);
-  
+
+    if (toService) {
+      handleToken(toService, "to", setToAccessToken);
+    }
+  }, [fromService, toService]);
 
   const renderConversionComponent = () => {
     /*if (!selectedPlaylist || !isReadyForConversion) {
