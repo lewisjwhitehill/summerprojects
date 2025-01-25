@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Titillium+Web:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Titillium+Web:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700&display=swap");
 
 /* Existing Styles */
 #root {
@@ -52,10 +52,8 @@
   border-radius: 15px; /* <-- Add rounded corners */
 }
 
-
-
 .banner {
-  font-family: 'Titillium Web', sans-serif;
+  font-family: "Titillium Web", sans-serif;
   position: absolute; /* Stays at the top of the viewport */
   top: 0;
   left: 0;
@@ -64,7 +62,23 @@
   color: white;
   text-align: center;
   padding: 1rem 0;
- 
+
+  font-size: 1.5rem;
+  font-weight: bold;
+  z-index: 1000; /* Ensure it stays on top of other elements */
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2); /* Optional: Adds shadow */
+}
+.banner2 {
+  font-family: "Titillium Web", sans-serif;
+  position: absolute; /* Stays at the top of the viewport */
+  top: 4rem;
+  left: 0;
+  width: 100%;
+  background-color: #b91d1d; /* Spotify green */
+  color: white;
+  text-align: center;
+  padding: 1rem 0;
+
   font-size: 1.5rem;
   font-weight: bold;
   z-index: 1000; /* Ensure it stays on top of other elements */
@@ -92,20 +106,20 @@
 
 /* Border color for "from" panel */
 .from-spotify {
-  border-color: #1DB954; /* Spotify Green */
+  border-color: #1db954; /* Spotify Green */
 }
 
 .from-youtube {
-  border-color: #FF0000; /* YouTube Red */
+  border-color: #ff0000; /* YouTube Red */
 }
 
 /* Border color for "to" panel */
 .to-spotify {
-  border-color: #1DB954; /* Spotify Green */
+  border-color: #1db954; /* Spotify Green */
 }
 
 .to-youtube {
-  border-color: #FF0000; /* YouTube Red */
+  border-color: #ff0000; /* YouTube Red */
 }
 /* Darker gray for the left panel */
 .left-panel {
@@ -123,9 +137,7 @@
   padding: 20px;
 }
 
-
 .floating-clear-tokens {
-  
   position: fixed; /* Makes it float */
   top: 20px;
   left: 20px;
@@ -150,6 +162,19 @@
   font-size: 1.2rem;
   color: #ff5757; /* Red for visibility */
   margin-bottom: 1rem;
-
 }
 
+.footer {
+  font-family: "Titillium Web", sans-serif;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #1c1c1c; /* Dark background for contrast */
+  color: white;
+  text-align: center;
+  padding: 0.5rem 0;
+  font-size: 1rem;
+  z-index: 1000; /* Ensures it's above other elements */
+  box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.2); /* Optional: Adds top shadow */
+}

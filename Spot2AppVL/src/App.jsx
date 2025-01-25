@@ -109,6 +109,8 @@ function App() {
       
       {/* Add the banner */}
       <div className="banner">Playlist Converter</div>
+      <div className="banner2"> Due to Spotify and YouTube API limitations, unless otherwise authorized, you can't use the conversion feature.</div>
+
 
       <div>
         {message && <p>{message}</p>}
@@ -211,6 +213,7 @@ function App() {
       <div className="conversion-component">
         {renderConversionComponent()}
       </div>
+      <div className="footer">If you have questions you can email us at vincenttharkins@gmail.com and whitehilljl@gmail.com</div>
     </div>
   );
 }
